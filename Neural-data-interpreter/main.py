@@ -50,7 +50,7 @@ def plotSignal(data, nodes, subplot):
 
 # Returns pd.DataFrame with time [s] as index.
 def readCSV(fileName, N_ROWS):
-    raw_data = pd.read_csv(fileName, skiprows=6,nrows=N_ROWS)
+    raw_data = pd.read_csv(fileName, nrows=N_ROWS)
     raw_data.iloc[:,0] = raw_data.iloc[:,0]*10**-6
     raw_data.set_index("TimeStamp [µs]", inplace=True)
     return raw_data
@@ -71,7 +71,7 @@ def spikeDetection(data):
 
 def main():
     N_ROWS = 10000
-    fileName = "Data/2017-10-20T16-07-47MEA2 _Recording-0_(Data Acquisition (1);MEA2100; Electrode Raw Data1).csv"
+    fileName = "Data/2017-10-20_MEA2_100000rows_10sec.csv"
     data = readCSV(fileName, N_ROWS)
 
     subplot = True
