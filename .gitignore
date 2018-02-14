@@ -3,6 +3,8 @@
 
 # Project specific
 env/
+.idea/317.iml
+.idea/misc.iml
 
 # User-specific stuff:
 .idea/**/workspace.xml
