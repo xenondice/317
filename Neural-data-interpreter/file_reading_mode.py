@@ -202,11 +202,11 @@ def main():
     # Done
     #plotSignal(data, [1, 25, 56], subplot)
     #plotSpikes(data, N_ROWS)
-    frequenzyPlot(data, N_ROWS)
+    #frequenzyPlot(data, N_ROWS)
 
 
     # In development
-    #intesityPlot(data, N_ROWS)
+    intesityPlot(data, N_ROWS)
 
 
 if __name__ == "__main__":
