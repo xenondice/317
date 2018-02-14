@@ -85,29 +85,28 @@ def intesityPlot(data, N_ROWS):
         x_size = 0.8
         y_size = 0.8
         k = 0
+        print(colors[0].get_hex_l())
         for j in range(len(values)):
-            print(j)
             if values[j] <= color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[0].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[0].get_hex_l())
             elif color_groups < values[j] <= 2 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[1].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[1].get_hex_l())
             elif 2 * color_groups < values[j] <= 3 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[2].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[2].get_hex_l())
             elif 3 * color_groups < values[j] <= 4 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[3].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[3].get_hex_l())
             elif 4 * color_groups < values[j] <= 5 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[4].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[4].get_hex_l())
             elif 5 * color_groups < values[j] <= 6 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[5].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[5].get_hex_l())
             elif 6 * color_groups < values[j] <= 7 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[6].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[6].get_hex_l())
             elif 7 * color_groups < values[j] <= 8 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[7].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[7].get_hex_l())
             elif 8 * color_groups < values[j] <= 9 * color_groups:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[8].get_hex_l()))
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[8].get_hex_l())
             else:
-                genPatches(ax, x_pos, y_pos, x_size, y_size, str(colors[9].get_hex_l()))
-                print(colors[9].get_rgb())
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[9].get_hex_l())
             if k == 9:
                 y_pos += y_size + 0.2
                 x_pos = 0.6
@@ -194,7 +193,7 @@ def spikeDetection(data):
 
 
 def main():
-    N_ROWS = 10000
+    N_ROWS = 1000
     fileName = "Data/2017-10-20_MEA2_100000rows_10sec.csv"
     data = readCSV(fileName, N_ROWS)
 
