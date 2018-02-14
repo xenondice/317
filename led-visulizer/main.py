@@ -4,7 +4,7 @@ from OpenGL.GLU import *
 from OpenGL.GL.shaders import *
 
 program = None
-vert_data = []
+
 
 def init():
     glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -29,21 +29,6 @@ def init():
         compileShader(frag_code, GL_FRAGMENT_SHADER)
     )
 
-    prepare_led_cube()
-
-    glLinkProgram(program)
-    vao = glGenVertexArrays(1)
-    glBindVertexArray(vao)
-
-    vbo = glGenBuffers(1)
-    glBindBuffer(GL_ARRAY_BUFFER, vbo)
-    glBufferData(GL_ARRAY_BUFFER, len(vert_data)*4, (4*len(vert_data)) *vert_data, GL_STATIC_DRAW)
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*4, 0)
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*4, 3*4)
-    glEnableVertexAttribArray(0)
-    glEnableVertexAttribArray(1)
-
 
 def resize(width, height):
     if height == 0:
@@ -56,102 +41,78 @@ def resize(width, height):
     glMatrixMode(GL_MODELVIEW)
 
 
-def prepare_led_cube():
-
-    # X Z- wall
-    vert_data.extend([0.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    vert_data.extend([0.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    # X Z+ wall
-    vert_data.extend([0.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    vert_data.extend([0.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    # Y X- wall
-    vert_data.extend([0.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    vert_data.extend([0.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    # Y X+ wall
-    vert_data.extend([1.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    vert_data.extend([1.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    # Z Y- wall
-    vert_data.extend([0.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    vert_data.extend([1.0, 0.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 0.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    # Z Y+ wall
-    vert_data.extend([0.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-    vert_data.extend([1.0, 1.0, 0.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([0.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-    vert_data.extend([1.0, 1.0, 1.0])  # Position
-    vert_data.extend([0.0, 0.0])  # Texture coordinates
-
-
 def draw_led_cube():
     glTranslatef(-1.5, 0.0, -6.0)
-    glutSolidCube(1.0)
+
+    glBegin(GL_QUADS)
+
+    # Front face
+    glNormal3f(0.0, 0.0, 1.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-1.0, -1.0, 1.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(1.0, -1.0, 1.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(1.0, 1.0, 1.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-1.0, 1.0, 1.0)
+
+    # Back face
+    glNormal3f(0.0, 0.0, -1.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(-1.0, -1.0, -1.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(-1.0, 1.0, -1.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(1.0, 1.0, -1.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(1.0, -1.0, -1.0)
+
+    # Top face
+    glNormal3f(0.0, 1.0, 0.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-1.0, 1.0, -1.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-1.0, 1.0, 1.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(1.0, 1.0, 1.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(1.0, 1.0, -1.0)
+
+    # Bottom face
+    glNormal3f(0.0, -1.0, 0.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(-1.0, -1.0, -1.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(1.0, -1.0, -1.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(1.0, -1.0, 1.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(-1.0, -1.0, 1.0)
+
+    # Right face
+    glNormal3f(1.0, 0.0, 0.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(1.0, -1.0, -1.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(1.0, 1.0, -1.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(1.0, 1.0, 1.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(1.0, -1.0, 1.0)
+
+    # Left face
+    glNormal3f(-1.0, 0.0, 0.0)
+    glTexCoord2f(0.0, 0.0)
+    glVertex3f(-1.0, -1.0, -1.0)
+    glTexCoord2f(1.0, 0.0)
+    glVertex3f(-1.0, -1.0, 1.0)
+    glTexCoord2f(1.0, 1.0)
+    glVertex3f(-1.0, 1.0, 1.0)
+    glTexCoord2f(0.0, 1.0)
+    glVertex3f(-1.0, 1.0, -1.0)
+
+    glEnd()
 
 
 def display():
