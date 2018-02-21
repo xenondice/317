@@ -1,6 +1,7 @@
 pyopengl
-pyopengl_accelerate
+pyopengl-accelerate
 matplotlib
 numpy
 scipy
 pandas
+colour
