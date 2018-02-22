@@ -1,5 +1,5 @@
+![alt text](https://i.imgur.com/UzyoMpD.png)
 # NTNU's Experts in Teams 2018: Cyborg
-# Group 1: "317"
 
 ## About
 The project's goal is  to humanize NTNU's cyborg. This involves the following subgoals:
