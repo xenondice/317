@@ -2,6 +2,7 @@
 
 import serial
 import time
+import port_finder
 
 BAUDRATE = 115200
 NUM_LEDS = 240
@@ -11,11 +12,11 @@ NUM_LEDS = 240
 ser = serial.Serial('/dev/ttyACM0', BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
 time.sleep(2)
 
-def serialWrite(data):
+def serial_write(data):
     ser.write(data)   # Encode for python 3
 
 # Read a number of bytes
-def serialRead(bytes):
+def serial_read(bytes):
     return ser.read(bytes)
 
 def main():  # This is just a testing function
@@ -30,17 +31,11 @@ def main():  # This is just a testing function
     testdata5[20] = 255
 
     while(True):
-        #print(testdata3)
         serialWrite(testdata)
-        #print(len(data))
         time.sleep(0.1)
-        #print(testdata4)
         serialWrite(testdata2)
-        #print(len(data))
         time.sleep(0.1)
-        #print(testdata5)
         serialWrite(testdata3)
-        #print(len(data))
         time.sleep(0.1)
 
 if __name__ == '__main__':
