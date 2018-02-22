@@ -4,6 +4,7 @@
 # Project specific
 .idea/317.iml
 .idea/misc.xml
+.idea/inspectionProfiles/**
 
 # User-specific stuff:
 .idea/**/workspace.xml
