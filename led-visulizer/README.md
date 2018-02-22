@@ -19,8 +19,12 @@
   // Defines groups that can be used in the code to easier control single LEDs.
   // Accessible through a dictionary object in code, group name is arbitrary.
   // Use n-dimensional arrays with the ids of the LEDs (zero-indexed).
+  // Use id -1 for placeholder LEDs.
   "led-groups": {
-    "down-plane": [0, 1, 2] // Group "down-plane" with the LEDs 0, 1 and 2.
+    "down-plane": [ // Group "down-plane" with a 2D matrix containing LEDs 0, 1, 2 and one placeholder.
+      [0, 1],
+      [2, -1]
+    ]
   }
 }
 ```
