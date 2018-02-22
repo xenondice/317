@@ -1,5 +1,5 @@
-# JSON model file commented example
-```
+# JSON model file example
+```javascript
 {
   // Defines the sequential positions of the LEDs in the led strip in 3D space.
   // 1 unit = 1 meter.
