@@ -5,6 +5,8 @@ from OpenGL.GL.shaders import *
 from colour import Color
 from threading import Thread
 from random import randint
+from numpy import array, zeros
+from ctypes import sizeof, c_float, c_void_p, c_uint
 import json
 import time
 
@@ -14,12 +16,16 @@ class LedVisualizer:
     You have to provide a json dictionary at instantiation, this should refer to a json file.
     You also have to provide a pointer to the array of led colors.
     After this, use the refresh function to update the LEDs.
+    The current shader supports up to 100 LEDS, update the shader variable if more.
     """
 
     model = None
     program = None
     led_colors = None
-    led_color_buffer = None
+    led_buffer_colors = None
+    led_buffer_color_index = None
+    led_buffer_positions = None
+    led_buffer_position_index = None
     visualizer_thread = None
 
     horizontal_angle = 0.0
@@ -27,8 +33,10 @@ class LedVisualizer:
     refresh_queued = True
     delta_time = None
     last_time = None
+    n_leds = None
 
     clear_color = Color('gray')
+    debug = False
     fov = 45.0
     close = 0.01
     far = 1000
@@ -42,8 +50,17 @@ class LedVisualizer:
 
         self.model = model
         self.led_colors = led_colors
-        self.led_color_buffer = list(led_colors)
+        self.led_buffer_colors = array(led_colors)
+        self.n_leds = len(model['led-strip'])
         self.last_time = time.time()
+
+        self.led_buffer_positions = zeros(3*self.n_leds)
+        i = 0
+        for v in model['led-strip']:
+            self.led_buffer_positions[i] = v[0]
+            self.led_buffer_positions[i+1] = v[1]
+            self.led_buffer_positions[i+2] = v[2]
+            i += 3
 
         def thread_func():
             self._init_glut()
@@ -85,6 +102,35 @@ class LedVisualizer:
         vert_file.close()
         frag_file.close()
 
+        indexes = glGenBuffers(2)
+        self.led_buffer_color_index = indexes[0]
+        self.led_buffer_position_index = indexes[1]
+
+        glBindBuffer(GL_UNIFORM_BUFFER, self.led_buffer_color_index)
+        glBufferData(GL_UNIFORM_BUFFER,
+                     len(self.led_buffer_colors)*sizeof(c_float),
+                     self.led_buffer_colors,
+                     GL_STREAM_DRAW)
+
+        glBindBuffer(GL_UNIFORM_BUFFER, self.led_buffer_position_index)
+        glBufferData(GL_UNIFORM_BUFFER,
+                     len(self.led_buffer_positions)*sizeof(c_float),
+                     self.led_buffer_positions,
+                     GL_STATIC_DRAW)
+
+        glBindBuffer(GL_UNIFORM_BUFFER, 0)
+
+        color_binding_point = 1
+        position_binding_point = 2
+
+        color_block_index = glGetUniformBlockIndex(self.program, b'led_colors')
+        glUniformBlockBinding(self.program, color_block_index, color_binding_point)
+        glBindBufferBase(GL_UNIFORM_BUFFER, color_binding_point, self.led_buffer_color_index)
+
+        position_block_index = glGetUniformBlockIndex(self.program, b'led_positions')
+        glUniformBlockBinding(self.program, position_block_index, position_binding_point)
+        glBindBufferBase(GL_UNIFORM_BUFFER, position_binding_point, self.led_buffer_position_index)
+
     def _init_glut(self):
         glutInit()
         glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGB)
@@ -105,86 +151,32 @@ class LedVisualizer:
         gluPerspective(self.fov, float(width)/float(height), self.close, self.far)
         glMatrixMode(GL_MODELVIEW)
 
-    def _draw_led_cube(self):
+    def _draw_model(self):
         self.horizontal_angle += 10 * self.delta_time
         glTranslatef(0.0, 0.0, -6.0)
 
         glRotate(self.horizontal_angle, 0.5, 1.0, 0.0)
 
-        glBegin(GL_QUADS)
+        if self.debug:
+            led_coords = self.model['led-strip']
+            glBegin(GL_LINES)
+            for i in range(1, len(led_coords)):
+                prev_led = led_coords[i-1]
+                next_led = led_coords[i]
+                glVertex3f(prev_led[0], prev_led[1], prev_led[2])
+                glVertex3f(next_led[0], next_led[1], next_led[2])
+            glEnd()
 
-        # Front face
-        glNormal3f(0.0, 0.0, 1.0)
-        glTexCoord2f(0.0, 0.0)
-        glVertex3f(-1.0, -1.0, 1.0)
-        glTexCoord2f(1.0, 0.0)
-        glVertex3f(1.0, -1.0, 1.0)
-        glTexCoord2f(1.0, 1.0)
-        glVertex3f(1.0, 1.0, 1.0)
-        glTexCoord2f(0.0, 1.0)
-        glVertex3f(-1.0, 1.0, 1.0)
+        enclosure_coords = self.model['led-enclosure']
 
-        # Back face
-        glNormal3f(0.0, 0.0, -1.0)
-        glTexCoord2f(1.0, 0.0)
-        glVertex3f(-1.0, -1.0, -1.0)
-        glTexCoord2f(1.0, 1.0)
-        glVertex3f(-1.0, 1.0, -1.0)
-        glTexCoord2f(0.0, 1.0)
-        glVertex3f(1.0, 1.0, -1.0)
-        glTexCoord2f(0.0, 0.0)
-        glVertex3f(1.0, -1.0, -1.0)
-
-        # Top face
-        glNormal3f(0.0, 1.0, 0.0)
-        glTexCoord2f(0.0, 1.0)
-        glVertex3f(-1.0, 1.0, -1.0)
-        glTexCoord2f(0.0, 0.0)
-        glVertex3f(-1.0, 1.0, 1.0)
-        glTexCoord2f(1.0, 0.0)
-        glVertex3f(1.0, 1.0, 1.0)
-        glTexCoord2f(1.0, 1.0)
-        glVertex3f(1.0, 1.0, -1.0)
-
-        # Bottom face
-        glNormal3f(0.0, -1.0, 0.0)
-        glTexCoord2f(1.0, 1.0)
-        glVertex3f(-1.0, -1.0, -1.0)
-        glTexCoord2f(0.0, 1.0)
-        glVertex3f(1.0, -1.0, -1.0)
-        glTexCoord2f(0.0, 0.0)
-        glVertex3f(1.0, -1.0, 1.0)
-        glTexCoord2f(1.0, 0.0)
-        glVertex3f(-1.0, -1.0, 1.0)
-
-        # Right face
-        glNormal3f(1.0, 0.0, 0.0)
-        glTexCoord2f(1.0, 0.0)
-        glVertex3f(1.0, -1.0, -1.0)
-        glTexCoord2f(1.0, 1.0)
-        glVertex3f(1.0, 1.0, -1.0)
-        glTexCoord2f(0.0, 1.0)
-        glVertex3f(1.0, 1.0, 1.0)
-        glTexCoord2f(0.0, 0.0)
-        glVertex3f(1.0, -1.0, 1.0)
-
-        # Left face
-        glNormal3f(-1.0, 0.0, 0.0)
-        glTexCoord2f(0.0, 0.0)
-        glVertex3f(-1.0, -1.0, -1.0)
-        glTexCoord2f(1.0, 0.0)
-        glVertex3f(-1.0, -1.0, 1.0)
-        glTexCoord2f(1.0, 1.0)
-        glVertex3f(-1.0, 1.0, 1.0)
-        glTexCoord2f(0.0, 1.0)
-        glVertex3f(-1.0, 1.0, -1.0)
+        glBegin(GL_TRIANGLES)
+        for vertex in enclosure_coords:
+            glVertex3f(vertex[0][0], vertex[0][1], vertex[0][2])
+            glVertex3f(vertex[1][0], vertex[1][1], vertex[1][2])
+            glVertex3f(vertex[2][0], vertex[2][1], vertex[2][2])
         glEnd()
 
-    def _draw_model(self, debug):
-        pass
-
     def _render(self):
-
         now_time = time.time()
         self.delta_time = now_time - self.last_time
         self.last_time = now_time
@@ -193,19 +185,27 @@ class LedVisualizer:
 
         if self.refresh_queued:
             print('refreshing')
-            for i in range(len(self.led_color_buffer)):
-                self.led_color_buffer[i] = self.led_colors[i]
+            for i in range(len(led_colors)):
+                self.led_buffer_colors[i] = self.led_colors[i]
+
+            glBindBuffer(GL_UNIFORM_BUFFER, self.led_buffer_color_index)
+            glBufferSubData(GL_UNIFORM_BUFFER,
+                            0,
+                            len(self.led_buffer_colors)*sizeof(c_float),
+                            self.led_buffer_colors)
+            glBindBuffer(GL_UNIFORM_BUFFER, 0)
+
             self.refresh_queued = False
 
         glLoadIdentity()
 
-        if self.program:
-            glUseProgram(self.program)
+        glUseProgram(self.program)
 
-        self._draw_led_cube()
-        #self._draw_model(True)
+        self._draw_model()
 
         glutSwapBuffers()
+
+        glUseProgram(0)
 
     def _mouse_used(*args):
         pass
@@ -228,6 +228,7 @@ if __name__ == "__main__":
         0, 0, 255]
 
     vis = LedVisualizer(model_dict, led_colors)
+    vis.debug = True
 
     while True:
         time.sleep(1)
