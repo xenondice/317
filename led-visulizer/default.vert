@@ -1,8 +1,9 @@
 varying vec3 normal;
-varying vec3 position;
+varying vec3 world_position;
+in vec4 position;
 
 void main() {
     normal = gl_NormalMatrix * gl_Normal;
-    position = gl_Vertex;
-    gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+    world_position = position.xyz;
+    gl_Position = gl_ModelViewProjectionMatrix * position;
 }

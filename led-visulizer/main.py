@@ -5,8 +5,7 @@ from OpenGL.GL.shaders import *
 from colour import Color
 from threading import Thread
 from random import randint
-from numpy import array, zeros
-from ctypes import sizeof, c_float, c_void_p, c_uint
+from ctypes import sizeof
 import json
 import time
 
@@ -27,6 +26,10 @@ class LedVisualizer:
     led_buffer_positions = None
     led_buffer_position_index = None
     visualizer_thread = None
+
+    vao_id = None
+    vab_id = None
+    attr_pos_loc = None
 
     horizontal_angle = 0.0
     vertical_angle = 0.0
@@ -50,11 +53,11 @@ class LedVisualizer:
 
         self.model = model
         self.led_colors = led_colors
-        self.led_buffer_colors = array(led_colors)
         self.n_leds = len(model['led-strip'])
         self.last_time = time.time()
 
-        self.led_buffer_positions = zeros(3*self.n_leds)
+        self.led_buffer_colors = (GLfloat * (3*self.n_leds))(*led_colors)
+        self.led_buffer_positions = (GLfloat * (3*self.n_leds))(0)
         i = 0
         for v in model['led-strip']:
             self.led_buffer_positions[i] = v[0]
@@ -85,6 +88,7 @@ class LedVisualizer:
         glEnable(GL_POLYGON_SMOOTH)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
+        glEnable(GL_VERTEX_ARRAY)
 
         if not glUseProgram:
             raise EnvironmentError('Missing shader objects')
@@ -102,19 +106,43 @@ class LedVisualizer:
         vert_file.close()
         frag_file.close()
 
+        self.vao_id = glGenVertexArrays(1)
+        glBindVertexArray(self.vao_id)
+
+        vertex_data = (GLfloat * 12)(*[
+            -0.5, -0.5, -1, 1.0,
+            2, -0.5, -1, 1.0,
+            -0.5, 2, -1, 1.0
+        ])
+
+        self.vab_id = glGenBuffers(1)
+        glBindBuffer(GL_ARRAY_BUFFER, self.vab_id)
+
+        self.attr_pos_loc = glGetAttribLocation(self.program, 'position')
+        glEnableVertexAttribArray(self.attr_pos_loc)
+
+        glVertexAttribPointer(self.attr_pos_loc, 4, GL_FLOAT, GL_FALSE, 0, GLvoid)
+
+        glBufferData(GL_ARRAY_BUFFER, len(vertex_data) * sizeof(GLfloat), vertex_data, GL_STATIC_DRAW)
+
+        glBindVertexArray(0)
+        glDisableVertexAttribArray(self.attr_pos_loc)
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
+
+        """
         indexes = glGenBuffers(2)
         self.led_buffer_color_index = indexes[0]
         self.led_buffer_position_index = indexes[1]
 
         glBindBuffer(GL_UNIFORM_BUFFER, self.led_buffer_color_index)
         glBufferData(GL_UNIFORM_BUFFER,
-                     len(self.led_buffer_colors)*sizeof(c_float),
+                     len(self.led_buffer_colors)*sizeof(GLfloat),
                      self.led_buffer_colors,
                      GL_STREAM_DRAW)
 
         glBindBuffer(GL_UNIFORM_BUFFER, self.led_buffer_position_index)
         glBufferData(GL_UNIFORM_BUFFER,
-                     len(self.led_buffer_positions)*sizeof(c_float),
+                     len(self.led_buffer_positions)*sizeof(GLfloat),
                      self.led_buffer_positions,
                      GL_STATIC_DRAW)
 
@@ -130,6 +158,7 @@ class LedVisualizer:
         position_block_index = glGetUniformBlockIndex(self.program, b'led_positions')
         glUniformBlockBinding(self.program, position_block_index, position_binding_point)
         glBindBufferBase(GL_UNIFORM_BUFFER, position_binding_point, self.led_buffer_position_index)
+        """
 
     def _init_glut(self):
         glutInit()
@@ -157,7 +186,11 @@ class LedVisualizer:
 
         glRotate(self.horizontal_angle, 0.5, 1.0, 0.0)
 
-        if self.debug:
+        glBindVertexArray(self.vao_id)
+        glDrawArrays(GL_TRIANGLES, 0, 12)
+        glBindVertexArray(0)
+
+        '''if self.debug:
             led_coords = self.model['led-strip']
             glBegin(GL_LINES)
             for i in range(1, len(led_coords)):
@@ -175,7 +208,7 @@ class LedVisualizer:
             glVertex3f(vertex[1][0], vertex[1][1], vertex[1][2])
             glVertex3f(vertex[2][0], vertex[2][1], vertex[2][2])
         glEnd()
-
+        '''
     def _render(self):
         now_time = time.time()
         self.delta_time = now_time - self.last_time
@@ -185,16 +218,16 @@ class LedVisualizer:
 
         if self.refresh_queued:
             print('refreshing')
-            for i in range(len(led_colors)):
+            for i in range(3*self.n_leds):
                 self.led_buffer_colors[i] = self.led_colors[i]
-
+            """
             glBindBuffer(GL_UNIFORM_BUFFER, self.led_buffer_color_index)
             glBufferSubData(GL_UNIFORM_BUFFER,
                             0,
                             len(self.led_buffer_colors)*sizeof(c_float),
                             self.led_buffer_colors)
             glBindBuffer(GL_UNIFORM_BUFFER, 0)
-
+            """
             self.refresh_queued = False
 
         glLoadIdentity()
@@ -213,6 +246,9 @@ class LedVisualizer:
     def refresh(self):
         self.refresh_queued = True
 
+    def running(self):
+        return self.visualizer_thread.is_alive()
+
 
 if __name__ == "__main__":
     # TODO: Make the model global for all the scripts and add error check
@@ -230,8 +266,10 @@ if __name__ == "__main__":
     vis = LedVisualizer(model_dict, led_colors)
     vis.debug = True
 
-    while True:
-        time.sleep(1)
+    time.sleep(2)
+
+    while vis.running():
         for i in range(len(led_colors)):
             led_colors[i] = randint(0, 255)
         vis.refresh()
+        time.sleep(1)
