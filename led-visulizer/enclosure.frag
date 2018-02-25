@@ -4,6 +4,7 @@
 #define ENCLOSURE_COLOR vec3(1.0, 1.0, 1.0)
 
 varying vec3 normal;
+varying vec3 world_normal;
 varying vec4 world_position;
 
 uniform vec4[MAX_LEDS] led_positions;
@@ -16,7 +17,7 @@ void main() {
     vec3 ambient_normal = normalize(vec3(1.0, 1.0, 1.0));
     float ambient_bounce = 0.3;
 
-    float intensity = clamp(dot(normal, ambient_normal), 0, 1);
+    float intensity = clamp(dot(world_normal, ambient_normal), 0, 1);
     intensity = intensity * (1 - ambient_bounce) + ambient_bounce;
     vec3 color_sum = ENCLOSURE_COLOR * ambient_light * intensity;
     //float change_sum = 0.0;

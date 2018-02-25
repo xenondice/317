@@ -220,7 +220,7 @@ class LedVisualizer:
         self.horizontal_angle += 10 * self.delta_time
         glTranslatef(0.0, 0.0, -6.0)
 
-        #glRotate(self.horizontal_angle, 0.5, 1.0, 0.0)
+        glRotate(self.horizontal_angle, 0.5, 1.0, 0.0)
 
         glBindVertexArray(self.vao)
         glDrawArrays(GL_TRIANGLES, 0, len(self.led_enclosure_buffer))
