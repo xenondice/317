@@ -1,19 +1,24 @@
 # This is for serial communication via uart with an arduino
+# python3
 
 import serial
 import time
+import sys
 import port_finder
 
 BAUDRATE = 115200
-NUM_LEDS = 240
-
+NUM_LEDS = 240  # Is this used elsewhere??
 
 # Initialize serial communication, 8 data bits, no parity 1 stop bit
-ser = serial.Serial('/dev/ttyACM0', BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
+port = find_arduino_port()
+if(port == null){
+    sys.exit("Couldn't find arduino port")
+}
+ser = serial.Serial(port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
 time.sleep(2)
 
 def serial_write(data):
-    ser.write(data)   # Encode for python 3
+    ser.write(data)
 
 # Read a number of bytes
 def serial_read(bytes):
@@ -29,7 +34,6 @@ def main():  # This is just a testing function
     #testdata3[719], testdata3[718], testdata3[717] = 5, 5, 5
     testdata4[15] = 255
     testdata5[20] = 255
-
     while(True):
         serialWrite(testdata)
         time.sleep(0.1)
