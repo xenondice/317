@@ -16,7 +16,7 @@ class LedVisualizer:
     You have to provide a json dictionary at instantiation, this should refer to a json file.
     You also have to provide a pointer to the array of led colors.
     After this, use the refresh function to update the LEDs.
-    The current shader supports up to 100 LEDS, update the shader variable if more.
+    The current shader supports up to 300 LEDS, update the shader variable if more is needed.
     """
 
     model = None
@@ -44,6 +44,11 @@ class LedVisualizer:
     delta_time = None
     last_time = None
     n_leds = None
+
+    hdr = [1.0, 0.0]
+    hdr_goal = [1.0, 0.0]
+    hdr_change_rate = 1.0
+    hdr_id = None
 
     clear_color = Color('gray')
     debug = False
@@ -88,13 +93,15 @@ class LedVisualizer:
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
         glEnable(GL_VERTEX_ARRAY)
+        #glEnable(GL_BLEND)
+        #glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         if not glUseProgram:
             raise EnvironmentError('Missing shader objects')
 
         # Open shader files
-        vert_file = open('default.vert')
-        frag_file = open('default.frag')
+        vert_file = open('enclosure.vert')
+        frag_file = open('enclosure.frag')
 
         # Compile
         self.program = compileProgram(
@@ -135,6 +142,8 @@ class LedVisualizer:
 
         self.attrib_led_position_id = glGetUniformLocation(self.program, 'led_positions')
         glUniform4fv(self.attrib_led_position_id, self.n_leds, self.led_position_buffer)
+
+        self.hdr_id = glGetUniformLocation(self.program, 'hdr')
 
         """
         # Setup LED color buffer
@@ -185,6 +194,18 @@ class LedVisualizer:
         glutMouseFunc(self._mouse_used)
         glutReshapeFunc(self._resize)
 
+    def _update_hdr(self):
+
+        self.hdr[0] += (self.hdr_goal[0] - self.hdr[0])*self.hdr_change_rate*self.delta_time
+        self.hdr[1] += (self.hdr_goal[1] - self.hdr[1])*self.hdr_change_rate*self.delta_time
+
+        glClearColor(
+            self.clear_color.get_red()*self.hdr[0] - self.hdr[1],
+            self.clear_color.get_green()*self.hdr[0] - self.hdr[1],
+            self.clear_color.get_blue()*self.hdr[0] - self.hdr[1],
+            1.0)
+        glUniform2f(self.hdr_id, GLfloat(self.hdr[0]), GLfloat(self.hdr[1]))
+
     def _resize(self, width, height):
         if height == 0:
             height = 1
@@ -225,11 +246,17 @@ class LedVisualizer:
         glUseProgram(self.program)
 
         if self.refresh_queued:
+            light_intensity = 0.0
             for i in range(self.n_leds):
+                led_intensity = 0.0
                 for j in range(3):
-                    self.led_color_buffer[i * 4 + j] = self.led_colors[i * 3 + j] / 255.
+                    led = self.led_colors[i * 3 + j] / 255.0
+                    led_intensity += led / 3.0
+                    self.led_color_buffer[i * 4 + j] = led
+                light_intensity += led_intensity
                 self.led_color_buffer[i * 4 + 3] = 1.0
-
+            light_intensity /= self.n_leds
+            self.hdr_goal[1] = light_intensity*0.5
             glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
             """
@@ -243,6 +270,7 @@ class LedVisualizer:
 
             self.refresh_queued = False
 
+        self._update_hdr()
         self._draw_model()
 
         glutSwapBuffers()
@@ -275,10 +303,8 @@ if __name__ == "__main__":
     vis = LedVisualizer(model_dict, led_colors)
     vis.debug = True
 
-    time.sleep(2)
-
     while vis.running():
         for i in range(len(led_colors)):
             led_colors[i] = randint(0, 255)
         vis.refresh()
-        time.sleep(0.01)
+        time.sleep(1)
