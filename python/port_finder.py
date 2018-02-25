@@ -4,9 +4,9 @@ import serial.tools.list_ports
 def find_arduino_port():
     ports = list(serial.tools.list_ports.comports())
     for port in ports:
-        if("arduino" in str(port.product.lower())):
+        if("arduino" in str(port).lower()):
             return str(port).split(" -")[0]
-    return Null
+    return None
 
 def main():
     print(find_arduino_port())
