@@ -6,7 +6,8 @@ from colour import Color
 from threading import Thread
 from random import randint
 from ctypes import sizeof
-from numpy import ones
+from numpy import ones, clip
+from math import sin, cos, pow, pi
 import json
 import time
 
@@ -38,8 +39,21 @@ class LedVisualizer:
     led_position_buffer_id = None
     attrib_led_position_id = None
 
-    horizontal_angle = 0.0
-    vertical_angle = 0.0
+    camera_horizontal_angle = pi/4
+    camera_vertical_angle = pi/4
+
+    zoom_factor = 0.0
+    zoom_start_distance = 6.0
+    zoom_last_distance = 6.0
+    zoom_animation_speed = 0.1
+
+    key_down_left_mouse = False
+
+    mouse_drag_speed = 0.01
+    mouse_scroll_speed = 0.5
+    mouse_last_x = -1.0
+    mouse_last_y = -1.0
+
     refresh_queued = False
     delta_time = None
     last_time = None
@@ -192,10 +206,12 @@ class LedVisualizer:
         glutDisplayFunc(self._render)
         glutIdleFunc(self._render)
         glutMouseFunc(self._mouse_used)
+        glutMouseWheelFunc(self._mouse_scroll_used)
+        glutKeyboardFunc(self._keyboard_used)
+        glutMotionFunc(self._motion)
         glutReshapeFunc(self._resize)
 
     def _update_hdr(self):
-
         self.hdr[0] += (self.hdr_goal[0] - self.hdr[0])*self.hdr_change_rate*self.delta_time
         self.hdr[1] += (self.hdr_goal[1] - self.hdr[1])*self.hdr_change_rate*self.delta_time
 
@@ -216,12 +232,18 @@ class LedVisualizer:
         gluPerspective(self.fov, float(width)/float(height), self.close, self.far)
         glMatrixMode(GL_MODELVIEW)
 
+    def _update_camera(self):
+        zoom_distance_goal = pow(2.0, self.zoom_factor)*self.zoom_start_distance
+        self.zoom_last_distance += (zoom_distance_goal - self.zoom_last_distance)*self.zoom_animation_speed
+
+        gluLookAt(
+            self.zoom_last_distance * cos(self.camera_horizontal_angle) * sin(self.camera_vertical_angle),
+            self.zoom_last_distance * sin(self.camera_horizontal_angle) * sin(self.camera_vertical_angle),
+            self.zoom_last_distance * cos(self.camera_vertical_angle),
+            0, 0, 0,
+            0, 0, 1)
+
     def _draw_model(self):
-        self.horizontal_angle += 10 * self.delta_time
-        glTranslatef(0.0, 0.0, -6.0)
-
-        glRotate(self.horizontal_angle, 0.5, 1.0, 0.0)
-
         glBindVertexArray(self.vao)
         glDrawArrays(GL_TRIANGLES, 0, len(self.led_enclosure_buffer))
         glBindVertexArray(0)
@@ -256,7 +278,7 @@ class LedVisualizer:
                 light_intensity += led_intensity
                 self.led_color_buffer[i * 4 + 3] = 1.0
             light_intensity /= self.n_leds
-            self.hdr_goal[1] = light_intensity*0.5
+            self.hdr_goal[1] = light_intensity*1.0
             glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
             """
@@ -271,20 +293,48 @@ class LedVisualizer:
             self.refresh_queued = False
 
         self._update_hdr()
+        self._update_camera()
         self._draw_model()
 
         glutSwapBuffers()
 
         glUseProgram(0)
 
-    def _mouse_used(*args):
-        pass
-
     def refresh(self):
         self.refresh_queued = True
 
     def running(self):
         return self.visualizer_thread.is_alive()
+
+    def _keyboard_used(self, key, x, y):
+        if key == 'esc':
+            exit(0)
+        elif key == 'd':
+            self.debug = not self.debug
+
+    def _mouse_used(self, button, state, x, y):
+        if button == GLUT_LEFT_BUTTON:
+            if state == GLUT_UP:
+                self.key_down_left_mouse = False
+                self.mouse_last_x = -1.0
+                self.mouse_last_y = -1.0
+            else:
+                self.key_down_left_mouse = True
+
+    def _mouse_scroll_used(self, wheel, direction, x, y):
+        self.zoom_factor -= direction * self.mouse_scroll_speed
+
+    def _motion(self, x, y):
+        if self.key_down_left_mouse:
+            if self.mouse_last_x == -1.0:
+                self.mouse_last_x = x
+                self.mouse_last_y = y
+            self.camera_horizontal_angle -= (x - self.mouse_last_x)*self.mouse_drag_speed
+            self.camera_horizontal_angle = self.camera_horizontal_angle % (2*pi)
+            temp = self.camera_vertical_angle - (y - self.mouse_last_y)*self.mouse_drag_speed
+            self.camera_vertical_angle = clip(temp, 0.001, pi - 0.001)
+            self.mouse_last_x = x
+            self.mouse_last_y = y
 
 
 if __name__ == "__main__":
