@@ -6,7 +6,7 @@ from colour import Color
 from threading import Thread
 from random import randint
 from ctypes import sizeof
-from numpy import ones, clip
+from numpy import ones, clip, sign
 from math import sin, cos, pow, pi
 import json
 import time
@@ -61,7 +61,7 @@ class LedVisualizer:
 
     hdr = [1.0, 0.0]
     hdr_goal = [1.0, 0.0]
-    hdr_change_rate = 1.0
+    hdr_change_rate = 0.1
     hdr_id = None
 
     clear_color = Color('gray')
@@ -212,8 +212,11 @@ class LedVisualizer:
         glutReshapeFunc(self._resize)
 
     def _update_hdr(self):
-        self.hdr[0] += (self.hdr_goal[0] - self.hdr[0])*self.hdr_change_rate*self.delta_time
-        self.hdr[1] += (self.hdr_goal[1] - self.hdr[1])*self.hdr_change_rate*self.delta_time
+        for i in range(2):
+            if abs(self.hdr_goal[i] - self.hdr[i]) <= self.hdr_change_rate*self.delta_time:
+                self.hdr[i] = self.hdr_goal[i]
+            else:
+                self.hdr[i] += self.hdr_change_rate*self.delta_time*sign(self.hdr_goal[i] - self.hdr[i])
 
         glClearColor(
             self.clear_color.get_red()*self.hdr[0] - self.hdr[1],
@@ -357,4 +360,8 @@ if __name__ == "__main__":
         for i in range(len(led_colors)):
             led_colors[i] = randint(0, 255)
         vis.refresh()
-        time.sleep(1)
+        time.sleep(5)
+        for i in range(len(led_colors)):
+            led_colors[i] = 0
+        vis.refresh()
+        time.sleep(5)
