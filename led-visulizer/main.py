@@ -22,6 +22,7 @@ class LedVisualizer:
 
     model = None
     program = None
+    debug_program = None
     led_colors = None
     visualizer_thread = None
 
@@ -66,6 +67,7 @@ class LedVisualizer:
 
     clear_color = Color('gray')
     debug = False
+    active_debug = False
     fov = 45.0
     close = 0.01
     far = 1000
@@ -127,6 +129,19 @@ class LedVisualizer:
         vert_file.close()
         frag_file.close()
 
+        # Open shader files
+        vert_file = open('debug.vert')
+        frag_file = open('debug.frag')
+
+        self.debug_program = compileProgram(
+            compileShader(vert_file.read(), GL_VERTEX_SHADER),
+            compileShader(frag_file.read(), GL_FRAGMENT_SHADER)
+        )
+
+        # Close files
+        vert_file.close()
+        frag_file.close()
+
         glUseProgram(self.program)
 
         # Fill LED buffers
@@ -152,12 +167,9 @@ class LedVisualizer:
 
         # Not the best way, but works for now
         self.attrib_led_color_id = glGetUniformLocation(self.program, 'led_colors')
-        glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
-
         self.attrib_led_position_id = glGetUniformLocation(self.program, 'led_positions')
-        glUniform4fv(self.attrib_led_position_id, self.n_leds, self.led_position_buffer)
-
         self.hdr_id = glGetUniformLocation(self.program, 'hdr')
+        self._bind_uniforms()
 
         """
         # Setup LED color buffer
@@ -178,9 +190,9 @@ class LedVisualizer:
         self.attrib_led_position_id = glGetUniformLocation(self.program, 'led_positions')
         glBindBufferBase(GL_UNIFORM_BUFFER, 1, self.led_position_buffer_id)
         glUniformBlockBinding(self.program, self.attrib_led_position_id, 1)
-        """
-
+        
         glBindBuffer(GL_UNIFORM_BUFFER, 0)
+        """
 
         # Setup enclosure vertex buffer
         self.led_enclosure_buffer_id = glGenBuffers(1)
@@ -218,12 +230,19 @@ class LedVisualizer:
             else:
                 self.hdr[i] += self.hdr_change_rate*self.delta_time*sign(self.hdr_goal[i] - self.hdr[i])
 
-        glClearColor(
-            self.clear_color.get_red()*self.hdr[0] - self.hdr[1],
-            self.clear_color.get_green()*self.hdr[0] - self.hdr[1],
-            self.clear_color.get_blue()*self.hdr[0] - self.hdr[1],
-            1.0)
-        glUniform2f(self.hdr_id, GLfloat(self.hdr[0]), GLfloat(self.hdr[1]))
+        if not self.active_debug:
+            glClearColor(
+                self.clear_color.get_red()/self.hdr[0] - self.hdr[1],
+                self.clear_color.get_green()/self.hdr[0] - self.hdr[1],
+                self.clear_color.get_blue()/self.hdr[0] - self.hdr[1],
+                1.0)
+            glUniform2f(self.hdr_id, GLfloat(self.hdr[0]), GLfloat(self.hdr[1]))
+        else:
+            glClearColor(
+                self.clear_color.get_red(),
+                self.clear_color.get_green(),
+                self.clear_color.get_blue(),
+                1.0)
 
     def _resize(self, width, height):
         if height == 0:
@@ -251,8 +270,17 @@ class LedVisualizer:
         glDrawArrays(GL_TRIANGLES, 0, len(self.led_enclosure_buffer))
         glBindVertexArray(0)
 
-        if self.debug:
-            pass
+    def _draw_debug(self):
+        glBindVertexArray(self.vao)
+        glDrawArrays(GL_TRIANGLES, 0, len(self.led_enclosure_buffer))
+        glBindVertexArray(0)
+
+        glBegin(GL_LINES)
+        glColor(1,1,1)
+        glVertex(1,1,1)
+        glColor(0,0,0)
+        glVertex(2,2,2)
+        glEnd()
 
     def _render(self):
         now_time = time.time()
@@ -268,7 +296,16 @@ class LedVisualizer:
 
         glLoadIdentity()
 
-        glUseProgram(self.program)
+        debug_state = self.debug
+
+        if debug_state:
+            glUseProgram(self.debug_program)
+        else:
+            glUseProgram(self.program)
+
+        if self.active_debug != debug_state:
+            self.active_debug = debug_state
+            #self._bind_uniforms()
 
         if self.refresh_queued:
             light_intensity = 0.0
@@ -282,7 +319,8 @@ class LedVisualizer:
                 self.led_color_buffer[i * 4 + 3] = 1.0
             light_intensity /= self.n_leds
             self.hdr_goal[1] = light_intensity*1.0
-            glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
+            if not debug_state:
+                glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
             """
             glBindBuffer(GL_UNIFORM_BUFFER, self.led_buffer_color_index)
@@ -297,7 +335,11 @@ class LedVisualizer:
 
         self._update_hdr()
         self._update_camera()
-        self._draw_model()
+
+        if debug_state:
+            self._draw_debug()
+        else:
+            self._draw_model()
 
         glutSwapBuffers()
 
@@ -310,10 +352,12 @@ class LedVisualizer:
         return self.visualizer_thread.is_alive()
 
     def _keyboard_used(self, key, x, y):
-        if key == 'esc':
-            exit(0)
-        elif key == 'd':
+        if key is b'd':
             self.debug = not self.debug
+
+    def _bind_uniforms(self):
+        glUniform4fv(self.attrib_led_position_id, self.n_leds, self.led_position_buffer)
+        glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
     def _mouse_used(self, button, state, x, y):
         if button == GLUT_LEFT_BUTTON:
@@ -354,7 +398,7 @@ if __name__ == "__main__":
         0, 0, 255]
 
     vis = LedVisualizer(model_dict, led_colors)
-    vis.debug = True
+    #vis.debug = True
 
     while vis.running():
         for i in range(len(led_colors)):

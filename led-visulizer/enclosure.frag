@@ -39,7 +39,7 @@ void main() {
         color_sum += led_color.xyz * gaussian_spread * bias;
     }
 
-    color_sum = color_sum * hdr.x - hdr.y;
+    color_sum = color_sum / hdr.x - hdr.y;
 
     //change_sum = clamp(1 - change_sum, 0, 1);
     //color_sum += ENCLOSURE_COLOR * change_sum;
