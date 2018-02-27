@@ -6,7 +6,7 @@ from colour import Color
 from threading import Thread
 from random import randint
 from ctypes import sizeof
-from numpy import ones, clip, sign
+from numpy import ones, clip, sign, arange, linspace
 from math import sin, cos, pow, pi
 import json
 import time
@@ -271,16 +271,74 @@ class LedVisualizer:
         glBindVertexArray(0)
 
     def _draw_debug(self):
-        glBindVertexArray(self.vao)
-        glDrawArrays(GL_TRIANGLES, 0, len(self.led_enclosure_buffer))
-        glBindVertexArray(0)
+        # This is horrible, mixing opengl versions, using fixed pipeline... Oh well, only for debug
 
+        # Grid
         glBegin(GL_LINES)
-        glColor(1,1,1)
-        glVertex(1,1,1)
-        glColor(0,0,0)
-        glVertex(2,2,2)
+        glColor(0.2, 0.2, 0.2)
+
+        for x in arange(-1, 1, 0.01):
+            glVertex(x, 1, 0)
+            glVertex(x, -1, 0)
+
+        for y in arange(-1, 1, 0.01):
+            glVertex(1, y, 0)
+            glVertex(-1, y, 0)
+
         glEnd()
+
+        # Origin marker
+        glBegin(GL_LINES)
+
+        # X - axis
+        glColor(1, 0, 0)
+        glVertex(0, 0, 0)
+        glColor(1, 0, 0)
+        glVertex(0.1, 0, 0)
+
+        # Y - axis
+        glColor(0, 1, 0)
+        glVertex(0, 0, 0)
+        glColor(0, 1, 0)
+        glVertex(0, 0.1, 0)
+
+        # Z - axis
+        glColor(0, 0, 1)
+        glVertex(0, 0, 0)
+        glColor(0, 0, 1)
+        glVertex(0, 0, 0.1)
+
+        glEnd()
+
+        # LEDs
+        glBegin(GL_LINES)
+        trans = linspace(0,1,self.n_leds)
+        for led in range(self.n_leds - 1):
+            glColor(
+                1,
+                trans[led],
+                1-trans[led])
+            glVertex(
+                self.led_position_buffer[led*4],
+                self.led_position_buffer[led*4+1],
+                self.led_position_buffer[led*4+2])
+            glColor(
+                1,
+                trans[led+1],
+                1 - trans[led+1])
+            glVertex(
+                self.led_position_buffer[(led+1)*4],
+                self.led_position_buffer[(led+1)*4+1],
+                self.led_position_buffer[(led+1)*4+2])
+        glEnd()
+
+        # Enclosure
+        for poly in self.model['led-enclosure']:
+            glBegin(GL_LINE_LOOP)
+            glColor(0, 1, 1)
+            for vert in poly:
+                glVertex(vert[0], vert[1], vert[2])
+            glEnd()
 
     def _render(self):
         now_time = time.time()
