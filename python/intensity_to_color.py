@@ -36,7 +36,5 @@ def main():
         intensity[i] = randint(0,9)
         dataToColor(intensity, Color("red"), Color("yellow"))
 
-
-
 if __name__ == '__main__':
     main()
