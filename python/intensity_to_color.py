@@ -8,27 +8,28 @@ Created on Wed Feb 21 13:13:44 2018
 from colour import Color
 from random import randint
 from constants import NUM_LEDS
+import serial_test
 
 def gen_color_gradient(from_color, to_color):
     color1 = Color(from_color)
     return list(color1.range_to(Color(to_color),10))
 
-def data_to_hex(intensity, from_color, from_color):
+def intensity_to_hex(intensity, from_color, from_color):
     colors = genColorGradient(color1, color2)
     hexIntensity = [0]*60
     for i in range(len(intensity)):
         hexIntensity[i] = colors[intensity[i]].get_hex_l()
     return hexIntensity
 
-def data_to_byte(intensity, from_color, to_color):
+def intensity_to_bytearray_write(intensity, from_color, to_color):
     hexarray = data_to_hex(intensity, from_color, to_color)
-    num_leds_cluster = int(NUM_LEDS/60)
+    num_ledscluster = int(NUM_LEDS/60)
     byteArr = bytearray([0, 0, 0]*NUM_LEDS)
     for i in range(len(hexarray)):
         for j in range(num_leds_cluster):
             index = i*3*num_leds_cluster+3*j
             byteArr[index:index+3] = bytearray.fromhex(hexarray[i][1:])
-    return byteArr
+    serial_write(byteArr)
 
 def main():
     intensity = [0]*60
