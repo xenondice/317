@@ -7,6 +7,7 @@ Created on Wed Feb 21 13:13:44 2018
 
 from colour import Color
 from random import randint
+from constants import NUM_LEDS
 
 intensity = [0]*60
 
@@ -21,16 +22,25 @@ def dataToColor(intensity, color1, color2):
     hexIntensity = [0]*60
     for i in range(len(intensity)):
         hexIntensity[i] = colors[intensity[i]].get_hex_l()
-        print(hexIntensity[i])
+        
     return hexIntensity
 
-# def fromHexToByte: to be continued
+
+def hexToByteArr(hexIntensity):
+    num_leds_cluster = int(NUM_LEDS/60)
+    byteArr = bytearray([0, 0, 0]*NUM_LEDS)
+    for i in range(len(hexIntensity)):
+        for j in range(num_leds_cluster):
+            index = i*3*num_leds_cluster+3*j
+            byteArr[index:index+3] = bytearray.fromhex(hexIntensity[i][1:])
     
+    return byteArr
+
 
 def main():
     for i in range(len(intensity)):
         intensity[i] = randint(0,9)
-    dataToColor(intensity, Color("red"), Color("yellow"))
+        dataToColor(intensity, Color("red"), Color("yellow"))
     
     
     
