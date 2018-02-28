@@ -44,6 +44,7 @@ void setLedsFromBuffer(){
 // SETUP LEDS AND SERIAL COMMUINICATION
 void setup(){
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+  FastLED.clear();
   Serial.begin(BAUDRATE, SERIAL_8N1);     //Starting serial communication, 8 data bits, no parity, 1 stop bit
 }
 

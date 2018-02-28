@@ -4,14 +4,14 @@
 import serial
 import time
 import sys
-import port_finder
+import port_finder as pf
 from constants import BAUDRATE
 
 # Initialize serial communication, 8 data bits, no parity 1 stop bit
-port = find_arduino_port()
-if(port == null){
+port = pf.find_arduino_port()
+if(port == None):
     sys.exit("Couldn't find arduino port")
-}
+
 ser = serial.Serial(port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
 time.sleep(2)
 
