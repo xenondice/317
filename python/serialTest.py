@@ -5,9 +5,7 @@ import serial
 import time
 import sys
 import port_finder
-
-BAUDRATE = 115200
-NUM_LEDS = 240  # Is this used elsewhere??
+from constants import BAUDRATE
 
 # Initialize serial communication, 8 data bits, no parity 1 stop bit
 port = find_arduino_port()
