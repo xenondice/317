@@ -9,40 +9,34 @@ from colour import Color
 from random import randint
 from constants import NUM_LEDS
 
-intensity = [0]*60
-
-# LEDs = bytearray([0, 0, 0]*NUM_LEDS)
-
-def genColorGradient(from_color, to_color):
+def gen_color_gradient(from_color, to_color):
     color1 = Color(from_color)
     return list(color1.range_to(Color(to_color),10))
 
-def dataToColor(intensity, color1, color2):
+def data_to_hex(intensity, from_color, from_color):
     colors = genColorGradient(color1, color2)
     hexIntensity = [0]*60
     for i in range(len(intensity)):
         hexIntensity[i] = colors[intensity[i]].get_hex_l()
-        
     return hexIntensity
 
-
-def hexToByteArr(hexIntensity):
+def data_to_byte(intensity, from_color, to_color):
+    hexarray = data_to_hex(intensity, from_color, to_color)
     num_leds_cluster = int(NUM_LEDS/60)
     byteArr = bytearray([0, 0, 0]*NUM_LEDS)
-    for i in range(len(hexIntensity)):
+    for i in range(len(hexarray)):
         for j in range(num_leds_cluster):
             index = i*3*num_leds_cluster+3*j
-            byteArr[index:index+3] = bytearray.fromhex(hexIntensity[i][1:])
-    
+            byteArr[index:index+3] = bytearray.fromhex(hexarray[i][1:])
     return byteArr
 
-
 def main():
+    intensity = [0]*60
     for i in range(len(intensity)):
         intensity[i] = randint(0,9)
         dataToColor(intensity, Color("red"), Color("yellow"))
-    
-    
-    
+
+
+
 if __name__ == '__main__':
     main()

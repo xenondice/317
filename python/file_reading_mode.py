@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import intensityToColor
+import serial_test
 
 
 # Returns pd.DataFrame with time [s] as index.
@@ -34,7 +36,7 @@ def spikes_plot(data, N_ROWS):
             else:
                 leds[j] = 9
         print(leds)
-        # TODO Call function intensityToColor.py using leds
+        serial_write(data_to_byte(leds, 'red', 'green'))
 
 
 def frequency_plot(data, N_ROWS):
@@ -49,7 +51,7 @@ def frequency_plot(data, N_ROWS):
     for i in range(len(leds)):
         leds[i] = color_grouping(i, n_triggers, spikes_per_group)
     print(leds)
-    # TODO Call function intensityToColor.py using leds
+    serial_write(data_to_byte(leds, 'red', 'green'))
 
 
 def intensity_plot(data, N_ROWS):
@@ -64,7 +66,7 @@ def intensity_plot(data, N_ROWS):
         for j in range(len(volt)):
             leds[j] = color_grouping(j, volt, volt_per_group)
         print(leds)
-        # TODO Call function intensityToColor.py using leds
+        serial_write(data_to_byte(leds, 'red', 'green'))
 
 
 def color_grouping(index, values, value_per_group):
