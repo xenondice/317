@@ -43,6 +43,8 @@ class LedVisualizer:
 
     camera_horizontal_angle = pi/4
     camera_vertical_angle = pi/4
+    attrib_cam_pos_id = None
+    cam_pos = [0.0, 0.0, 0.0]
 
     zoom_factor = 0.0
     zoom_start_distance = 1.0
@@ -64,7 +66,7 @@ class LedVisualizer:
     hdr = [1.0, 0.0]
     hdr_goal = [1.0, 0.0]
     hdr_change_rate = 0.05
-    hdr_id = None
+    attrib_hdr_id = None
 
     clear_color = Color('gray')
     debug = False
@@ -179,7 +181,8 @@ class LedVisualizer:
         # Not the best way, but works for now
         self.attrib_led_color_id = glGetUniformLocation(self.program, 'led_colors')
         self.attrib_led_position_id = glGetUniformLocation(self.program, 'led_positions')
-        self.hdr_id = glGetUniformLocation(self.program, 'hdr')
+        self.attrib_hdr_id = glGetUniformLocation(self.program, 'hdr')
+        self.attrib_cam_pos_id = glGetUniformLocation(self.program, 'cam_pos')
         self._bind_uniforms()
 
         """
@@ -251,7 +254,7 @@ class LedVisualizer:
                 self.clear_color.get_green()/self.hdr[0] - self.hdr[1],
                 self.clear_color.get_blue()/self.hdr[0] - self.hdr[1],
                 1.0)
-            glUniform2f(self.hdr_id, GLfloat(self.hdr[0]), GLfloat(self.hdr[1]))
+            glUniform2f(self.attrib_hdr_id, GLfloat(self.hdr[0]), GLfloat(self.hdr[1]))
         else:
             glClearColor(
                 self.clear_color.get_red(),
@@ -273,12 +276,19 @@ class LedVisualizer:
         zoom_distance_goal = pow(2.0, self.zoom_factor)*self.zoom_start_distance
         self.zoom_last_distance += (zoom_distance_goal - self.zoom_last_distance)*self.zoom_animation_speed
 
+        self.cam_pos[0] = self.zoom_last_distance * cos(self.camera_horizontal_angle) * sin(self.camera_vertical_angle)
+        self.cam_pos[1] = self.zoom_last_distance * sin(self.camera_horizontal_angle) * sin(self.camera_vertical_angle)
+        self.cam_pos[2] = self.zoom_last_distance * cos(self.camera_vertical_angle)
+
         gluLookAt(
-            self.zoom_last_distance * cos(self.camera_horizontal_angle) * sin(self.camera_vertical_angle),
-            self.zoom_last_distance * sin(self.camera_horizontal_angle) * sin(self.camera_vertical_angle),
-            self.zoom_last_distance * cos(self.camera_vertical_angle),
+            self.cam_pos[0],
+            self.cam_pos[1],
+            self.cam_pos[2],
             0, 0, 0,
             0, 0, 1)
+
+        if not self.active_debug:
+            glUniform3f(self.attrib_cam_pos_id, GLfloat(self.cam_pos[0]), GLfloat(self.cam_pos[1]), GLfloat(self.cam_pos[2]))
 
     def _draw_model(self):
         glBindVertexArray(self.vao)
@@ -404,7 +414,7 @@ class LedVisualizer:
                 light_intensity += led_intensity
                 self.led_color_buffer[i * 4 + 3] = 1.0
             light_intensity /= self.n_leds
-            self.hdr_goal[1] = light_intensity*0.7
+            self.hdr_goal[1] = light_intensity*0.5
             if not debug_state:
                 glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
@@ -484,7 +494,12 @@ if __name__ == "__main__":
     #vis.debug = True
 
     while vis.running():
-        for i in range(len(led_colors)):
-                led_colors[i] = randint(0, 255)
-        vis.refresh()
-        time.sleep(0.05)
+        for i in range(vis.n_leds):
+            n = 200
+            for k in range(n):
+                prev = (i - k) % vis.n_leds
+                falloff = (n-k - 1)/n
+                for j in range(3):
+                    led_colors[prev*3+j] = randint(0, int(255*falloff)) + int(255*(1-falloff))
+            vis.refresh()
+            time.sleep(0.01)
