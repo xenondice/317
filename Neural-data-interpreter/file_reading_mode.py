@@ -16,13 +16,14 @@ def plotSpikes(data, N_ROWS):
         ax.clear()
 
 
+# hvor ofte en node blir aktivert for N_ROWS
 def frequenzyPlot(data, N_ROWS):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     n_triggers = np.zeros(60)
     for i in range(N_ROWS):
         spikes, _ = spikeDetection(data.iloc[i])
-        print(i)
+        print("triggers in frequency :" , i)
         for j in range(len(spikes)):
             if spikes[j] == True:
                 n_triggers[j] += 1
@@ -171,11 +172,9 @@ def plotSignal(data, nodes, subplot):
 
 
 # Returns pd.DataFrame with time [s] as index.
-def readCSV(fileName, N_ROWS):
-    raw_data = pd.read_csv(fileName, nrows=N_ROWS)
-    raw_data.iloc[:,0] = raw_data.iloc[:,0]*10**-6
-    raw_data.set_index("TimeStamp [µs]", inplace=True)
-    return raw_data
+def readCSV(fileName, N_ROWS, skip_rows):
+    return pd.read_csv(fileName,  skiprows=skip_rows, nrows=N_ROWS, index_col=0)
+
 
 
 def spikeDetection(data):
@@ -192,21 +191,27 @@ def spikeDetection(data):
     return spikes, values
 
 
-def main():
-    N_ROWS = 1000
-    fileName = "Data/2017-10-20_MEA2_100000rows_10sec.csv"
-    data = readCSV(fileName, N_ROWS)
+def iterate(filename, n_rows, num_of_iterations):
+    for x in range(num_of_iterations):
+        data = readCSV(filename, n_rows, x*n_rows)
+        frequenzyPlot(data, n_rows)
 
+
+def main():
+    N_ROWS = 100
+    fileName = "Data/2017-10-20_MEA2_100000rows_10sec.csv"
+    #data = readCSV(fileName, N_ROWS, 2000)
+    iterate(fileName, N_ROWS, 10)
     subplot = True
 
     # Done
     #plotSignal(data, [1, 25, 56], subplot)
     #plotSpikes(data, N_ROWS)
-    #frequenzyPlot(data, N_ROWS)
+    frequenzyPlot(data, N_ROWS)
 
 
     # In development
-    intesityPlot(data, N_ROWS)
+    #intesityPlot(data, N_ROWS)
 
 
 if __name__ == "__main__":
