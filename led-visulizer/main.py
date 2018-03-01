@@ -6,8 +6,8 @@ from colour import Color
 from threading import Thread
 from random import randint
 from ctypes import sizeof
-from numpy import ones, clip, sign, arange, linspace
-from math import sin, cos, pow, pi
+from numpy import ones, clip, sign, arange, linspace, array, cross
+from math import sin, cos, pow, pi, sqrt
 import json
 import time
 
@@ -31,6 +31,7 @@ class LedVisualizer:
     led_enclosure_buffer = None
     led_enclosure_buffer_id = None
     attrib_position_id = None
+    attrib_normal_id = None
 
     led_color_buffer = None
     led_color_buffer_id = None
@@ -44,14 +45,14 @@ class LedVisualizer:
     camera_vertical_angle = pi/4
 
     zoom_factor = 0.0
-    zoom_start_distance = 6.0
-    zoom_last_distance = 6.0
+    zoom_start_distance = 1.0
+    zoom_last_distance = 1.0
     zoom_animation_speed = 0.1
 
     key_down_left_mouse = False
 
     mouse_drag_speed = 0.01
-    mouse_scroll_speed = 0.5
+    mouse_scroll_speed = 0.1
     mouse_last_x = -1.0
     mouse_last_y = -1.0
 
@@ -155,11 +156,21 @@ class LedVisualizer:
 
         # Fill enclosure buffer
         led_enclosure = self.model['led-enclosure']
-        self.led_enclosure_buffer = (GLfloat * (3*4*len(led_enclosure)))(*ones(3*4*len(led_enclosure)))
+        self.led_enclosure_buffer = (GLfloat * (3*8*len(led_enclosure)))(*ones(3*8*len(led_enclosure)))
         for i in range(len(led_enclosure)):
+            # Calculate normal for the next three vertices
+            v1 = array(led_enclosure[i][0])
+            v2 = array(led_enclosure[i][1])
+            v3 = array(led_enclosure[i][2])
+            edge1 = v2 - v1
+            edge2 = v3 - v1
+            normal = cross(edge1, edge2)
+            normal = normal / sqrt(normal[0]**2 + normal[1]**2 + normal[2]**2)
             for j in range(3):
                 for k in range(3):
-                    self.led_enclosure_buffer[i*4*3+j*4+k] = led_enclosure[i][j][k]
+                    self.led_enclosure_buffer[i*8*3+j*8+k] = led_enclosure[i][j][k]
+                for k in range(3):
+                    self.led_enclosure_buffer[i*8*3+j*8+k+4] = normal[k]
 
         # Generate vertex array and bind
         self.vao = glGenVertexArrays(1)
@@ -201,8 +212,11 @@ class LedVisualizer:
                      self.led_enclosure_buffer, GL_STATIC_DRAW)
 
         self.attrib_position_id = glGetAttribLocation(self.program, 'position')
-        glVertexAttribPointer(self.attrib_position_id, 4, GL_FLOAT, GL_FALSE, 0, GLvoid)
+        self.attrib_normal_id = glGetAttribLocation(self.program, 'normal')
+        glVertexAttribPointer(self.attrib_position_id, 4, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), GLvoid)
         glEnableVertexAttribArray(self.attrib_position_id)
+        glVertexAttribPointer(self.attrib_normal_id, 4, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), GLvoidp(4*sizeof(GLfloat)))
+        glEnableVertexAttribArray(self.attrib_normal_id)
 
         glBindBuffer(GL_ARRAY_BUFFER, 0)
 
@@ -218,7 +232,8 @@ class LedVisualizer:
         glutDisplayFunc(self._render)
         glutIdleFunc(self._render)
         glutMouseFunc(self._mouse_used)
-        glutMouseWheelFunc(self._mouse_scroll_used)
+        if glutMouseWheelFunc:
+            glutMouseWheelFunc(self._mouse_scroll_used)
         glutKeyboardFunc(self._keyboard_used)
         glutMotionFunc(self._motion)
         glutReshapeFunc(self._resize)
@@ -376,7 +391,7 @@ class LedVisualizer:
                 light_intensity += led_intensity
                 self.led_color_buffer[i * 4 + 3] = 1.0
             light_intensity /= self.n_leds
-            self.hdr_goal[1] = light_intensity*1.0
+            self.hdr_goal[1] = light_intensity*2.0
             if not debug_state:
                 glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
@@ -450,20 +465,13 @@ if __name__ == "__main__":
     model_file.close()
     model_dict['name'] = model
 
-    led_colors = [
-        255, 0, 0,
-        0, 255, 0,
-        0, 0, 255]
+    led_colors = [0] * (len(model_dict['led-strip'])*3)
 
     vis = LedVisualizer(model_dict, led_colors)
     #vis.debug = True
 
     while vis.running():
         for i in range(len(led_colors)):
-            led_colors[i] = randint(0, 255)
+                led_colors[i] = randint(0, 255)
         vis.refresh()
-        time.sleep(5)
-        for i in range(len(led_colors)):
-            led_colors[i] = 0
-        vis.refresh()
-        time.sleep(5)
+        time.sleep(0.1)
