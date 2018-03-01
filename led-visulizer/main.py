@@ -63,7 +63,7 @@ class LedVisualizer:
 
     hdr = [1.0, 0.0]
     hdr_goal = [1.0, 0.0]
-    hdr_change_rate = 0.1
+    hdr_change_rate = 0.05
     hdr_id = None
 
     clear_color = Color('gray')
@@ -292,11 +292,11 @@ class LedVisualizer:
         glBegin(GL_LINES)
         glColor(0.2, 0.2, 0.2)
 
-        for x in arange(-1, 1, 0.01):
+        for x in arange(-1, 1, 0.1):
             glVertex(x, 1, 0)
             glVertex(x, -1, 0)
 
-        for y in arange(-1, 1, 0.01):
+        for y in arange(-1, 1, 0.1):
             glVertex(1, y, 0)
             glVertex(-1, y, 0)
 
@@ -391,7 +391,7 @@ class LedVisualizer:
                 light_intensity += led_intensity
                 self.led_color_buffer[i * 4 + 3] = 1.0
             light_intensity /= self.n_leds
-            self.hdr_goal[1] = light_intensity*2.0
+            self.hdr_goal[1] = light_intensity*0.7
             if not debug_state:
                 glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
@@ -474,4 +474,4 @@ if __name__ == "__main__":
         for i in range(len(led_colors)):
                 led_colors[i] = randint(0, 255)
         vis.refresh()
-        time.sleep(0.1)
+        time.sleep(0.05)

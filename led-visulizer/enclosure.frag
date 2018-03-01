@@ -1,6 +1,6 @@
 #define MAX_LEDS 300
 #define ENCLOSURE_SPREAD 1
-#define LED_AMPLIFICATION 0.002
+#define LED_AMPLIFICATION 0.001
 #define SCALE 1
 #define ENCLOSURE_FROSTING 30.0
 #define ENCLOSURE_COLOR vec3(1.0, 1.0, 1.0)
@@ -15,12 +15,12 @@ uniform vec2 hdr;
 void main() {
 
     vec3 ambient_light = vec3(1.0, 1.0, 1.0);
-    vec3 ambient_normal = normalize(vec3(1.0, 1.0, 1.0));
-    float ambient_bounce = 0.3;
+    vec3 ambient_normal = normalize(vec3(1.0, 0.6, 0.3));
+    float ambient_bounce = 0.8;
 
     float intensity = clamp(dot(world_normal, ambient_normal), 0, 1);
     intensity = intensity * (1 - ambient_bounce) + ambient_bounce;
-    vec3 color_sum = ENCLOSURE_COLOR * ambient_light * intensity * 0.1;
+    vec3 color_sum = ENCLOSURE_COLOR * ambient_light * intensity * 0.5;
     //float change_sum = 0.0;
 
     for (int i = 0; i < led_colors.length(); i++) {
