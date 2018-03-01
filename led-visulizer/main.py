@@ -292,11 +292,11 @@ class LedVisualizer:
         glBegin(GL_LINES)
         glColor(0.2, 0.2, 0.2)
 
-        for x in arange(-1, 1, 0.1):
+        for x in arange(-1, 1.1, 0.1):
             glVertex(x, 1, 0)
             glVertex(x, -1, 0)
 
-        for y in arange(-1, 1, 0.1):
+        for y in arange(-1, 1.1, 0.1):
             glVertex(1, y, 0)
             glVertex(-1, y, 0)
 
@@ -326,8 +326,9 @@ class LedVisualizer:
         glEnd()
 
         # LEDs
+        glPointSize(5)
         glBegin(GL_LINES)
-        trans = linspace(0,1,self.n_leds)
+        trans = linspace(0, 1, self.n_leds)
         for led in range(self.n_leds - 1):
             glColor(
                 1,
@@ -345,6 +346,18 @@ class LedVisualizer:
                 self.led_position_buffer[(led+1)*4],
                 self.led_position_buffer[(led+1)*4+1],
                 self.led_position_buffer[(led+1)*4+2])
+        glEnd()
+
+        glBegin(GL_POINTS)
+        for led in range(self.n_leds):
+            glColor(
+                self.led_color_buffer[led*4],
+                self.led_color_buffer[led*4+1],
+                self.led_color_buffer[led*4+2])
+            glVertex(
+                self.led_position_buffer[led*4],
+                self.led_position_buffer[led*4+1],
+                self.led_position_buffer[led*4+2])
         glEnd()
 
         # Enclosure

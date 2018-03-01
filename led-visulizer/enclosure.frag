@@ -26,6 +26,7 @@ void main() {
 
         vec4 distance_vector = world_position - led_positions[i];
         float distance_squared = dot(distance_vector, distance_vector);
+        if (distance_squared > 0.002) continue;
         //float normal_distance_squared = dot(world_normal, distance_vector); // Using just normal here yields '3D'
         //float planar_distance_squared = distance_squared - normal_distance_squared;
 
