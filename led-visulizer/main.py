@@ -492,14 +492,76 @@ if __name__ == "__main__":
 
     vis = LedVisualizer(model_dict, led_colors)
     #vis.debug = True
-
+    program = 'smily'
     while vis.running():
-        for i in range(vis.n_leds):
-            n = 200
-            for k in range(n):
-                prev = (i - k) % vis.n_leds
-                falloff = (n-k - 1)/n
-                for j in range(3):
-                    led_colors[prev*3+j] = randint(0, int(255*falloff)) + int(255*(1-falloff))
-            vis.refresh()
-            time.sleep(0.01)
+        if program == 'snake':
+            for i in range(vis.n_leds):
+                n = 200
+                for k in range(n):
+                    prev = (i - k) % vis.n_leds
+                    falloff = (n-k - 1)/n
+                    for j in range(3):
+                        led_colors[prev*3+j] = randint(0, int(255*falloff)) + int(255*(1-falloff))
+                vis.refresh()
+                time.sleep(0.01)
+        elif program == 'smily':
+            for x in range(10):
+                for y in range(5):
+                    top_id = model_dict['led-groups']['top'][y][x]
+                    if top_id != -1:
+                        led_colors[top_id * 3] = 0
+                        led_colors[top_id * 3 + 1] = 0
+                        led_colors[top_id * 3 + 2] = 0
+            n = 40
+            for x in range(40):
+                rad = (x/39)*2*pi
+                color = Color(hue=(x/39), saturation=1, luminance=0.5)
+                ids = [
+                    [2, 0],
+                    [2, 1],
+                    [2, 2],
+                    [6, 0],
+                    [6, 1],
+                    [6, 2],
+                    [0, 3],
+                    [1, 4],
+                    [2, 4],
+                    [3, 4],
+                    [4, 4],
+                    [5, 4],
+                    [6, 4],
+                    [7, 4],
+                    [8, 3]
+                ]
+                for led in ids:
+                    top_id = model_dict['led-groups']['top'][led[1]][led[0]]
+                    if top_id != -1:
+                        led_colors[top_id * 3] = int(color.get_red()*255)
+                        led_colors[top_id * 3 + 1] = int(color.get_green()*255)
+                        led_colors[top_id * 3 + 2] = int(color.get_blue()*255)
+                for t in range(n):
+                    prev = (x-t) % 40
+                    falloff = (n-t-1)/(n-1)
+                    rad = (prev/39)
+                    color = Color(hue=rad, saturation=1, luminance=0.5)
+                    for y in range(5):
+                        x_off = prev
+                        side = 'north'
+                        if prev < 10:
+                            pass
+                        elif prev < 20:
+                            x_off -= 10
+                            side = 'west'
+                        elif prev < 30:
+                            x_off -= 20
+                            side = 'south'
+                        else:
+                            x_off -= 30
+                            side = 'east'
+                        led_id = model_dict['led-groups'][side][y][x_off]
+                        if led_id != -1:
+                            led_colors[led_id*3] = int(color.get_red()*255*falloff)
+                            led_colors[led_id*3+1] = int(color.get_green()*255*falloff)
+                            led_colors[led_id*3+2] = int(color.get_blue()*255*falloff)
+                vis.refresh()
+                time.sleep(1/60)
