@@ -23,7 +23,6 @@ class LedVisualizer:
     model = None
     program = None
     debug_program = None
-    led_colors = None
     visualizer_thread = None
 
     vao = None
@@ -79,12 +78,8 @@ class LedVisualizer:
     window_height = 600
     window_title = b'LED Visualizer'
 
-    def __init__(self, model, led_colors):
-        if len(model['led-strip']) != len(led_colors)//3:
-            raise ValueError('LED color array does not fit current model')
-
+    def __init__(self, model):
         self.model = model
-        self.led_colors = led_colors
         self.n_leds = len(model['led-strip'])
         self.last_time = time.time()
 
@@ -110,10 +105,8 @@ class LedVisualizer:
         glShadeModel(GL_SMOOTH)
         glEnable(GL_POLYGON_SMOOTH)
         glEnable(GL_DEPTH_TEST)
-        #glEnable(GL_CULL_FACE)
+        glEnable(GL_CULL_FACE)
         glEnable(GL_VERTEX_ARRAY)
-        #glEnable(GL_BLEND)
-        #glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         if not glUseProgram:
             raise EnvironmentError('Missing shader objects')
@@ -153,7 +146,7 @@ class LedVisualizer:
         self.led_position_buffer = (GLfloat * (4*self.n_leds))(*ones(4*self.n_leds))
         for i in range(self.n_leds):
             for j in range(3):
-                self.led_color_buffer[i*4+j] = self.led_colors[i*3+j]/255.0
+                self.led_color_buffer[i*4+j] = 0.0
                 self.led_position_buffer[i*4+j] = led_positions[i][j]
 
         # Fill enclosure buffer
@@ -408,11 +401,9 @@ class LedVisualizer:
             for i in range(self.n_leds):
                 led_intensity = 0.0
                 for j in range(3):
-                    led = self.led_colors[i * 3 + j] / 255.0
+                    led = self.led_color_buffer[i * 3 + j]
                     led_intensity += led / 3.0
-                    self.led_color_buffer[i * 4 + j] = led
                 light_intensity += led_intensity
-                self.led_color_buffer[i * 4 + 3] = 1.0
             light_intensity /= self.n_leds
             self.hdr_goal[1] = light_intensity*0.5
             if not debug_state:
@@ -480,13 +471,8 @@ class LedVisualizer:
             self.mouse_last_y = y
 
 
-visualizer = None
-model = None
-led_colors = None
-
-
-def vis_init():
-    global visualizer, model, led_colors
+def _vis_init():
+    global visualizer, model
 
     model_name = 'cube'
     model_file = open('{}.json'.format(model_name))
@@ -494,21 +480,25 @@ def vis_init():
     model_file.close()
     model['name'] = model_name
 
-    led_colors = [0] * (len(model['led-strip']) * 3)
-    visualizer = LedVisualizer(model, led_colors)
+    visualizer = LedVisualizer(model)
 
 
 def vis_update(colors):
-    global led_colors, visualizer
-
-    for i in range(len(colors)):
-        led_colors[i] = colors[i]
+    global visualizer
+    for i in range(visualizer.n_leds):
+        for j in range(3):
+            visualizer.led_color_buffer[i*4+j] = colors[i*3+j]/255.0
     visualizer.refresh()
+
+
+visualizer = None
+model = None
+_vis_init()
 
 
 if __name__ == "__main__":
     # TODO: Make the model global for all the scripts and add error check
-    vis_init()
+    led_colors = [0] * (3*visualizer.n_leds)
     #vis.debug = True
     program = 'smily'
     while visualizer.running():
