@@ -8,7 +8,7 @@ Created on Wed Feb 21 13:13:44 2018
 from colour import Color
 from random import randint
 from constants import NUM_LEDS
-import serial_test as serial
+import serial_communication as serial
 
 def gen_color_gradient(from_color, to_color):
     color1 = Color(from_color)

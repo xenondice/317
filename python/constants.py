@@ -1,2 +1,4 @@
 BAUDRATE = 115200
-NUM_LEDS = 240 
+NUM_LEDS = 240
+COLOR_FROM = 'green'
+COLOR_TO = 'red'

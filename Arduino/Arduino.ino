@@ -12,7 +12,7 @@
 // BUFFER AND VARIABLES FOR RECEIVING A BYTEARRAY
 uint8_t buffer[NUM_LEDS*3];   // Each led has 3 bytes of data (One for each color value)
 int numBytesRead = 0;   // How many bytes have we read into the buffer
-bool gotData = false;  // Got all data we needed to set leds?
+bool gotData = false;  // Got all data we needed to set leds
 
 // INITIALIZE LEDS
 CRGB leds[NUM_LEDS];
@@ -45,6 +45,7 @@ void setLedsFromBuffer(){
 void setup(){
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
   FastLED.clear();
+  FastLED.show();
   Serial.begin(BAUDRATE, SERIAL_8N1);     //Starting serial communication, 8 data bits, no parity, 1 stop bit
 }
 
@@ -54,7 +55,6 @@ void loop(){
     FastLED.show();
     gotData = false;
   }
-  //delay(1);
 }
 
 // SERIAL
