@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 import intensity_to_color as itc
-import serial_test
 import time
 
 
@@ -67,7 +66,7 @@ def intensity_plot(data, N_ROWS):
         for j in range(len(volt)):
             leds[j] = color_grouping(j, volt, volt_per_group)
         #print(leds)
-        itc.intensity_to_bytearray_write(leds, 'blue', 'red')
+        itc.intensity_to_bytearray_write(leds, 'yellow', 'red')
         time.sleep(0.5)
 
 

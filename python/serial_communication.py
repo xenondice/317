@@ -5,7 +5,7 @@ import serial
 import time
 import sys
 import port_finder as pf
-import ../led-visulizer as lv
+#import ../led-visulizer as lv
 from constants import BAUDRATE, SIMULATION
 
 # Initialize serial communication, 8 data bits, no parity 1 stop bit
@@ -17,20 +17,23 @@ ser = serial.Serial(port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial
 time.sleep(2)
 
 def serial_write(data):
-    if(!SIMULATION):
+    if not SIMULATION:
         ser.write(data)
     else:
         pass
 
 # Read a number of bytes
 def serial_read(bytes):
-    if(!SIMULATION):
+    if not SIMULATION:
         return ser.read(bytes)
 
 def main():  # This is just a testing function
     testdata1 = bytearray([255, 0, 0]*240)
     testdata2 = bytearray([0, 255, 0]*240)
     testdata3 = bytearray([0, 0, 255]*240)
+    testdata4 = bytearray([255, 255, 255]*240)
+    serial_write(testdata4)
+    '''
     while(True):
         serialWrite(testdata1)
         time.sleep(0.3)
@@ -38,6 +41,7 @@ def main():  # This is just a testing function
         time.sleep(0.3)
         serialWrite(testdata3)
         time.sleep(0.3)
+    '''
 
 if __name__ == '__main__':
     main()
