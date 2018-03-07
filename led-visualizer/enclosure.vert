@@ -1,8 +1,8 @@
 varying vec4 world_normal;
 varying vec4 world_position;
 varying vec3 view_vector;
-in vec4 position;
-in vec4 normal;
+attribute vec4 position;
+attribute vec4 normal;
 uniform vec3 cam_pos;
 
 void main() {
