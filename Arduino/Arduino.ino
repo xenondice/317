@@ -12,7 +12,7 @@
 // BUFFER AND VARIABLES FOR RECEIVING A BYTEARRAY
 uint8_t buffer[NUM_LEDS*3];   // Each led has 3 bytes of data (One for each color value)
 int numBytesRead = 0;   // How many bytes have we read into the buffer
-bool gotData = false;  // Got all data we needed to set leds
+bool gotData = false;   // Got all data we needed to set leds
 
 // INITIALIZE LEDS
 CRGB leds[NUM_LEDS];
@@ -66,10 +66,10 @@ void loop(){
   https://www.arduino.cc/en/Reference/SerialEvent
   https://www.arduino.cc/en/Tutorial/SerialEvent
 */
+
+// Handle incoming serial data from PC, Pioneer LX or Raspberry Pi
 void serialEvent(){
-  // Handle incoming serial data from PC, Pioneer LX or Raspberry Pi
   while(Serial.available() && !gotData){
-    //Serial.Write(Serial.available()
     buffer[numBytesRead] = Serial.read();
     numBytesRead++;
     if(numBytesRead == NUM_LEDS*3){

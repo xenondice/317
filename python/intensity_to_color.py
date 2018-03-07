@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Feb 21 13:13:44 2018
-
-@author: Andreas
-"""
-
 from colour import Color
 from random import randint
 from constants import NUM_LEDS
@@ -32,10 +25,13 @@ def intensity_to_bytearray_write(intensity, from_color, to_color):
     serial.serial_write(byteArr)
 
 def main():
+    pass
+    '''
     intensity = [0]*60
     for i in range(len(intensity)):
         intensity[i] = randint(0,9)
         dataToColor(intensity, Color("red"), Color("yellow"))
+    '''
 
 if __name__ == '__main__':
     main()

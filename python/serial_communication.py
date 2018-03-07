@@ -19,30 +19,25 @@ time.sleep(2)
 def serial_write(data):
     if(!SIMULATION):
         ser.write(data)
-        return
-    
+    else:
+        pass
 
 # Read a number of bytes
 def serial_read(bytes):
-    return ser.read(bytes)
+    if(!SIMULATION):
+        return ser.read(bytes)
 
 def main():  # This is just a testing function
-    # Creating som test_data to send over to arduino
-    testdata = bytearray([0, 0, 5]*240)
-    testdata2 = bytearray([0, 5, 0]*240)
-    testdata3 = bytearray([5, 0, 0]*240)
-    testdata5 = bytearray([0, 0, 0]*240)
-    testdata4 = bytearray([0, 0, 0]*240)
-    #testdata3[719], testdata3[718], testdata3[717] = 5, 5, 5
-    testdata4[15] = 255
-    testdata5[20] = 255
+    testdata1 = bytearray([255, 0, 0]*240)
+    testdata2 = bytearray([0, 255, 0]*240)
+    testdata3 = bytearray([0, 0, 255]*240)
     while(True):
-        serialWrite(testdata)
-        time.sleep(0.1)
+        serialWrite(testdata1)
+        time.sleep(0.3)
         serialWrite(testdata2)
-        time.sleep(0.1)
+        time.sleep(0.3)
         serialWrite(testdata3)
-        time.sleep(0.1)
+        time.sleep(0.3)
 
 if __name__ == '__main__':
     main()
