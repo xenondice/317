@@ -480,34 +480,52 @@ class LedVisualizer:
             self.mouse_last_y = y
 
 
+visualizer = None
+model = None
+led_colors = None
+
+
+def vis_init():
+    global visualizer, model, led_colors
+
+    model_name = 'cube'
+    model_file = open('{}.json'.format(model_name))
+    model = json.loads(model_file.read())
+    model_file.close()
+    model['name'] = model_name
+
+    led_colors = [0] * (len(model['led-strip']) * 3)
+    visualizer = LedVisualizer(model, led_colors)
+
+
+def vis_update(colors):
+    global led_colors, visualizer
+
+    for i in range(len(colors)):
+        led_colors[i] = colors[i]
+    visualizer.refresh()
+
+
 if __name__ == "__main__":
     # TODO: Make the model global for all the scripts and add error check
-    model = 'cube'
-    model_file = open('{}.json'.format(model))
-    model_dict = json.loads(model_file.read())
-    model_file.close()
-    model_dict['name'] = model
-
-    led_colors = [0] * (len(model_dict['led-strip'])*3)
-
-    vis = LedVisualizer(model_dict, led_colors)
+    vis_init()
     #vis.debug = True
     program = 'smily'
-    while vis.running():
+    while visualizer.running():
         if program == 'snake':
-            for i in range(vis.n_leds):
+            for i in range(visualizer.n_leds):
                 n = 200
                 for k in range(n):
-                    prev = (i - k) % vis.n_leds
+                    prev = (i - k) % visualizer.n_leds
                     falloff = (n-k - 1)/n
                     for j in range(3):
                         led_colors[prev*3+j] = randint(0, int(255*falloff)) + int(255*(1-falloff))
-                vis.refresh()
+                visualizer.refresh()
                 time.sleep(0.01)
         elif program == 'smily':
             for x in range(10):
                 for y in range(5):
-                    top_id = model_dict['led-groups']['top'][y][x]
+                    top_id = model['led-groups']['top'][y][x]
                     if top_id != -1:
                         led_colors[top_id * 3] = 0
                         led_colors[top_id * 3 + 1] = 0
@@ -534,7 +552,7 @@ if __name__ == "__main__":
                     [8, 3]
                 ]
                 for led in ids:
-                    top_id = model_dict['led-groups']['top'][led[1]][led[0]]
+                    top_id = model['led-groups']['top'][led[1]][led[0]]
                     if top_id != -1:
                         led_colors[top_id * 3] = int(color.get_red()*255)
                         led_colors[top_id * 3 + 1] = int(color.get_green()*255)
@@ -558,10 +576,10 @@ if __name__ == "__main__":
                         else:
                             x_off -= 30
                             side = 'east'
-                        led_id = model_dict['led-groups'][side][y][x_off]
+                        led_id = model['led-groups'][side][y][x_off]
                         if led_id != -1:
                             led_colors[led_id*3] = int(color.get_red()*255*falloff)
                             led_colors[led_id*3+1] = int(color.get_green()*255*falloff)
                             led_colors[led_id*3+2] = int(color.get_blue()*255*falloff)
-                vis.refresh()
+                visualizer.refresh()
                 time.sleep(1/60)

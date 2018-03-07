@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 import intensity_to_color as itc
-import serial_test
+import serial_communication
 import time
+from led_visualizer import *
 
 
 # Returns pd.DataFrame with time [s] as index.
@@ -68,7 +69,7 @@ def intensity_plot(data, N_ROWS):
             leds[j] = color_grouping(j, volt, volt_per_group)
         #print(leds)
         itc.intensity_to_bytearray_write(leds, 'blue', 'red')
-        time.sleep(0.5)
+        time.sleep(0.0001)
 
 
 def color_grouping(index, values, value_per_group):
@@ -95,6 +96,7 @@ def color_grouping(index, values, value_per_group):
 
 
 def main():
+    vis_init()
     N_ROWS = 1000
     file_name = "Data/2017-10-20_MEA2_100000rows_10sec.csv"
     data = read_csv(file_name, N_ROWS)

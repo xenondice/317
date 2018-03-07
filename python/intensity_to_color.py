@@ -7,8 +7,9 @@ Created on Wed Feb 21 13:13:44 2018
 
 from colour import Color
 from random import randint
-from constants import NUM_LEDS
-import serial_communication as serial
+from constants import NUM_LEDS, SIMULATION
+#import serial_communication as serial
+from led_visualizer import *
 
 def gen_color_gradient(from_color, to_color):
     color1 = Color(from_color)
@@ -29,7 +30,10 @@ def intensity_to_bytearray_write(intensity, from_color, to_color):
         for j in range(num_leds_cluster):
             index = i*3*num_leds_cluster+3*j
             byteArr[index:index+3] = bytearray.fromhex(hexarray[i][1:])
-    serial.serial_write(byteArr)
+    if not SIMULATION:
+        serial.serial_write(byteArr)
+    else:
+        vis_update(byteArr)
 
 def main():
     intensity = [0]*60
