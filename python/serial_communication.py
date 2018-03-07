@@ -5,7 +5,8 @@ import serial
 import time
 import sys
 import port_finder as pf
-from constants import BAUDRATE
+import ../led-visulizer as lv
+from constants import BAUDRATE, SIMULATION
 
 # Initialize serial communication, 8 data bits, no parity 1 stop bit
 port = pf.find_arduino_port()
@@ -16,7 +17,10 @@ ser = serial.Serial(port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial
 time.sleep(2)
 
 def serial_write(data):
-    ser.write(data)
+    if(!SIMULATION):
+        ser.write(data)
+        return
+    
 
 # Read a number of bytes
 def serial_read(bytes):
