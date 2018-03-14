@@ -199,7 +199,7 @@ def iterate(filename, n_rows, num_of_iterations):
 
 def main():
     N_ROWS = 100
-    fileName = "Data/2017-10-20_MEA2_100000rows_10sec.csv"
+    fileName = "data/2017-10-20_MEA2_100000rows_10sec.csv"
     #data = readCSV(fileName, N_ROWS, 2000)
     iterate(fileName, N_ROWS, 10)
     subplot = True

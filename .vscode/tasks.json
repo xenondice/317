@@ -6,7 +6,7 @@
         {
             "label": "LED Visualizer",
             "type": "shell",
-            "command": "cd led-visualizer; ${config:python.pythonPath} main.py",
+            "command": "${config:python.pythonPath} python/led_visualizer.py",
             "group": {
                 "kind": "build",
                 "isDefault": true

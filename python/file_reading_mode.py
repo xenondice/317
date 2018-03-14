@@ -95,7 +95,7 @@ def color_grouping(index, values, value_per_group):
 
 def main():
     N_ROWS = 1000
-    file_name = "Data/2017-10-20_MEA2_100000rows_10sec.csv"
+    file_name = "data/2017-10-20_MEA2_100000rows_10sec.csv"
     data = read_csv(file_name, N_ROWS)
 
     # spikes_plot(data, N_ROWS)
