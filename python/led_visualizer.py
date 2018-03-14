@@ -8,7 +8,7 @@ from random import randint
 from ctypes import sizeof
 from numpy import ones, clip, sign, arange, linspace, array, cross
 from math import sin, cos, pow, pi, sqrt
-import json
+from constants import MODEL
 import time
 
 class LedVisualizer:
@@ -23,8 +23,8 @@ class LedVisualizer:
     model = None
     program = None
     debug_program = None
-    led_colors = None
     visualizer_thread = None
+    led_colors = None
 
     vao = None
 
@@ -79,14 +79,11 @@ class LedVisualizer:
     window_height = 600
     window_title = b'LED Visualizer'
 
-    def __init__(self, model, led_colors):
-        if len(model['led-strip']) != len(led_colors)//3:
-            raise ValueError('LED color array does not fit current model')
-
+    def __init__(self, model):
         self.model = model
-        self.led_colors = led_colors
         self.n_leds = len(model['led-strip'])
         self.last_time = time.time()
+        self.led_colors = [0] * (self.n_leds * 3)
 
         def thread_func():
             self._init_glut()
@@ -119,8 +116,8 @@ class LedVisualizer:
             raise EnvironmentError('Missing shader objects')
 
         # Open shader files
-        vert_file = open('enclosure.vert')
-        frag_file = open('enclosure.frag')
+        vert_file = open('shaders/enclosure.vert')
+        frag_file = open('shaders/enclosure.frag')
 
         # Compile
         self.program = compileProgram(
@@ -133,8 +130,8 @@ class LedVisualizer:
         frag_file.close()
 
         # Open shader files
-        vert_file = open('debug.vert')
-        frag_file = open('debug.frag')
+        vert_file = open('shaders/debug.vert')
+        frag_file = open('shaders/debug.frag')
 
         self.debug_program = compileProgram(
             compileShader(vert_file.read(), GL_VERTEX_SHADER),
@@ -153,7 +150,7 @@ class LedVisualizer:
         self.led_position_buffer = (GLfloat * (4*self.n_leds))(*ones(4*self.n_leds))
         for i in range(self.n_leds):
             for j in range(3):
-                self.led_color_buffer[i*4+j] = self.led_colors[i*3+j]/255.0
+                self.led_color_buffer[i*4+j] = 0.0
                 self.led_position_buffer[i*4+j] = led_positions[i][j]
 
         # Fill enclosure buffer
@@ -408,11 +405,11 @@ class LedVisualizer:
             for i in range(self.n_leds):
                 led_intensity = 0.0
                 for j in range(3):
-                    led = self.led_colors[i * 3 + j] / 255.0
+                    led = self.led_colors[i*3+j]/255.0
                     led_intensity += led / 3.0
-                    self.led_color_buffer[i * 4 + j] = led
+                    self.led_color_buffer[i*4+j] = led
+                self.led_color_buffer[i*4+3] = 1.0
                 light_intensity += led_intensity
-                self.led_color_buffer[i * 4 + 3] = 1.0
             light_intensity /= self.n_leds
             self.hdr_goal[1] = light_intensity*0.5
             if not debug_state:
@@ -480,88 +477,18 @@ class LedVisualizer:
             self.mouse_last_y = y
 
 
-if __name__ == "__main__":
-    # TODO: Make the model global for all the scripts and add error check
-    model = 'cube'
-    model_file = open('{}.json'.format(model))
-    model_dict = json.loads(model_file.read())
-    model_file.close()
-    model_dict['name'] = model
+_visualizer = None
 
-    led_colors = [0] * (len(model_dict['led-strip'])*3)
+def visualizer_init():
+    global _visualizer
+    _visualizer = LedVisualizer(MODEL)
 
-    vis = LedVisualizer(model_dict, led_colors)
-    #vis.debug = True
-    program = 'smily'
-    while vis.running():
-        if program == 'snake':
-            for i in range(vis.n_leds):
-                n = 200
-                for k in range(n):
-                    prev = (i - k) % vis.n_leds
-                    falloff = (n-k - 1)/n
-                    for j in range(3):
-                        led_colors[prev*3+j] = randint(0, int(255*falloff)) + int(255*(1-falloff))
-                vis.refresh()
-                time.sleep(0.01)
-        elif program == 'smily':
-            for x in range(10):
-                for y in range(5):
-                    top_id = model_dict['led-groups']['top'][y][x]
-                    if top_id != -1:
-                        led_colors[top_id * 3] = 0
-                        led_colors[top_id * 3 + 1] = 0
-                        led_colors[top_id * 3 + 2] = 0
-            n = 40
-            for x in range(40):
-                rad = (x/39)*2*pi
-                color = Color(hue=(x/39), saturation=1, luminance=0.5)
-                ids = [
-                    [2, 0],
-                    [2, 1],
-                    [2, 2],
-                    [6, 0],
-                    [6, 1],
-                    [6, 2],
-                    [0, 3],
-                    [1, 4],
-                    [2, 4],
-                    [3, 4],
-                    [4, 4],
-                    [5, 4],
-                    [6, 4],
-                    [7, 4],
-                    [8, 3]
-                ]
-                for led in ids:
-                    top_id = model_dict['led-groups']['top'][led[1]][led[0]]
-                    if top_id != -1:
-                        led_colors[top_id * 3] = int(color.get_red()*255)
-                        led_colors[top_id * 3 + 1] = int(color.get_green()*255)
-                        led_colors[top_id * 3 + 2] = int(color.get_blue()*255)
-                for t in range(n):
-                    prev = (x-t) % 40
-                    falloff = (n-t-1)/(n-1)
-                    rad = (prev/39)
-                    color = Color(hue=rad, saturation=1, luminance=0.5)
-                    for y in range(5):
-                        x_off = prev
-                        side = 'north'
-                        if prev < 10:
-                            pass
-                        elif prev < 20:
-                            x_off -= 10
-                            side = 'west'
-                        elif prev < 30:
-                            x_off -= 20
-                            side = 'south'
-                        else:
-                            x_off -= 30
-                            side = 'east'
-                        led_id = model_dict['led-groups'][side][y][x_off]
-                        if led_id != -1:
-                            led_colors[led_id*3] = int(color.get_red()*255*falloff)
-                            led_colors[led_id*3+1] = int(color.get_green()*255*falloff)
-                            led_colors[led_id*3+2] = int(color.get_blue()*255*falloff)
-                vis.refresh()
-                time.sleep(1/60)
+def visualizer_update(colors):
+    global _visualizer
+    for i in range(_visualizer.n_leds):
+        for j in range(3):
+            _visualizer.led_colors[i*3+j] = colors[i*3+j]
+    _visualizer.refresh()
+
+def visualizer_running():
+    return _visualizer.running()
