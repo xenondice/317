@@ -4,8 +4,9 @@ BAUDRATE = 115200
 NUM_LEDS = 240
 COLOR_FROM = 'green'
 COLOR_TO = 'red'
-SIMULATION = False
+SIMULATION = True
 ACTIVE_MODEL_NAME = 'cube'
+PROGRAM = 'smily'
 
 def _load_model(model_name):
     model_file = open('models/{}.json'.format(model_name))

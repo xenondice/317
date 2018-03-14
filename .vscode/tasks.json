@@ -4,13 +4,13 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "LED Visualizer",
+            "label": "Start",
             "type": "shell",
-            "command": "${config:python.pythonPath} python/led_visualizer.py",
+            "command": "${config:python.pythonPath} python/main.py",
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
-        }
+        },
     ]
 }
