@@ -1,3 +1,5 @@
+#version 120
+
 #define MAX_LEDS 300
 #define ENCLOSURE_SPREAD_MAX 30000
 #define ENCLOSURE_SPREAD_MIN 8000
@@ -20,7 +22,7 @@ void main() {
     vec3 ambient_normal = vec3(0.474, 0.316, 0.158);
     float ambient_bounce = 0.8;
 
-    float intensity = clamp(dot(world_normal, ambient_normal), 0, 1);
+    float intensity = clamp(dot(world_normal.xyz, ambient_normal), 0, 1);
     intensity = intensity * (1 - ambient_bounce) + ambient_bounce;
     vec3 color_sum = ENCLOSURE_COLOR * ambient_light * intensity * 0.5;
     //float change_sum = 0.0;

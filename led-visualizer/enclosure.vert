@@ -1,3 +1,5 @@
+#version 120
+
 varying vec4 world_normal;
 varying vec4 world_position;
 varying vec3 view_vector;
