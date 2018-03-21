@@ -1,3 +1,6 @@
+import os
+os.environ['PATH'] = 'libs' + ';' + os.environ['PATH']
+
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
