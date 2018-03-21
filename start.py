@@ -1,5 +1,5 @@
-from led_visualizer import *
-from constants import *
+from python.constants import *
+from python.led_visualizer import *
 from colour import Color
 from random import randint
 from math import pi

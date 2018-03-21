@@ -8,7 +8,7 @@ from random import randint
 from ctypes import sizeof
 from numpy import ones, clip, sign, arange, linspace, array, cross
 from math import sin, cos, pow, pi, sqrt
-from constants import MODEL
+from python.constants import MODEL
 import time
 
 class LedVisualizer:
