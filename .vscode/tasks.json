@@ -6,7 +6,7 @@
         {
             "label": "Start",
             "type": "shell",
-            "command": "${config:python.pythonPath} main.py",
+            "command": "${config:python.pythonPath} start.py",
             "group": {
                 "kind": "build",
                 "isDefault": true
