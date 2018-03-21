@@ -7,6 +7,11 @@ The project's goal is  to humanize NTNU's cyborg. This involves the following su
 - Processing neural data
 - Visulizing neural data
 
+## Required packages/programs
+# Linux
+apt-get install freeglut3-dev
+
+
 ## Installation
 If you are using Anaconda, you can quickly get the project up and running by cloning the project, opening the Anaconda prompt and executing:
 ```
