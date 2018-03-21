@@ -69,7 +69,7 @@ class LedVisualizer:
     attrib_hdr_id = None
 
     clear_color = Color('gray')
-    debug = False
+    debug = True
     active_debug = False
     fov = 45.0
     close = 0.01
@@ -116,18 +116,18 @@ class LedVisualizer:
             raise EnvironmentError('Missing shader objects')
 
         # Open shader files
-        vert_file = open('shaders/enclosure.vert')
-        frag_file = open('shaders/enclosure.frag')
+        #vert_file = open('shaders/enclosure.vert')
+        #frag_file = open('shaders/enclosure.frag')
 
         # Compile
-        self.program = compileProgram(
-            compileShader(vert_file.read(), GL_VERTEX_SHADER),
-            compileShader(frag_file.read(), GL_FRAGMENT_SHADER)
-        )
+        #self.program = compileProgram(
+        #    compileShader(vert_file.read(), GL_VERTEX_SHADER),
+        #    compileShader(frag_file.read(), GL_FRAGMENT_SHADER)
+        #)
 
         # Close files
-        vert_file.close()
-        frag_file.close()
+        #vert_file.close()
+        #frag_file.close()
 
         # Open shader files
         vert_file = open('shaders/debug.vert')
@@ -142,6 +142,8 @@ class LedVisualizer:
         vert_file.close()
         frag_file.close()
 
+        self.program = self.debug_program
+        
         glUseProgram(self.program)
 
         # Fill LED buffers
@@ -172,15 +174,15 @@ class LedVisualizer:
                     self.led_enclosure_buffer[i*8*3+j*8+k+4] = normal[k]
 
         # Generate vertex array and bind
-        self.vao = glGenVertexArrays(1)
-        glBindVertexArray(self.vao)
+        #self.vao = glGenVertexArrays(1)
+        #glBindVertexArray(self.vao)
 
         # Not the best way, but works for now
-        self.attrib_led_color_id = glGetUniformLocation(self.program, 'led_colors')
-        self.attrib_led_position_id = glGetUniformLocation(self.program, 'led_positions')
-        self.attrib_hdr_id = glGetUniformLocation(self.program, 'hdr')
-        self.attrib_cam_pos_id = glGetUniformLocation(self.program, 'cam_pos')
-        self._bind_uniforms()
+        #self.attrib_led_color_id = glGetUniformLocation(self.program, 'led_colors')
+        #self.attrib_led_position_id = glGetUniformLocation(self.program, 'led_positions')
+        #self.attrib_hdr_id = glGetUniformLocation(self.program, 'hdr')
+        #self.attrib_cam_pos_id = glGetUniformLocation(self.program, 'cam_pos')
+        #self._bind_uniforms()
 
         """
         # Setup LED color buffer
@@ -206,21 +208,21 @@ class LedVisualizer:
         """
 
         # Setup enclosure vertex buffer
-        self.led_enclosure_buffer_id = glGenBuffers(1)
-        glBindBuffer(GL_ARRAY_BUFFER, self.led_enclosure_buffer_id)
-        glBufferData(GL_ARRAY_BUFFER, len(self.led_enclosure_buffer) * sizeof(GLfloat),
-                     self.led_enclosure_buffer, GL_STATIC_DRAW)
+        #self.led_enclosure_buffer_id = glGenBuffers(1)
+        #glBindBuffer(GL_ARRAY_BUFFER, self.led_enclosure_buffer_id)
+        #glBufferData(GL_ARRAY_BUFFER, len(self.led_enclosure_buffer) * sizeof(GLfloat),
+        #             self.led_enclosure_buffer, GL_STATIC_DRAW)
 
-        self.attrib_position_id = glGetAttribLocation(self.program, 'position')
-        self.attrib_normal_id = glGetAttribLocation(self.program, 'normal')
-        glVertexAttribPointer(self.attrib_position_id, 4, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), GLvoid)
-        glEnableVertexAttribArray(self.attrib_position_id)
-        glVertexAttribPointer(self.attrib_normal_id, 4, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), GLvoidp(4*sizeof(GLfloat)))
-        glEnableVertexAttribArray(self.attrib_normal_id)
+        #self.attrib_position_id = glGetAttribLocation(self.program, 'position')
+        #self.attrib_normal_id = glGetAttribLocation(self.program, 'normal')
+        #glVertexAttribPointer(self.attrib_position_id, 4, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), GLvoid)
+        #glEnableVertexAttribArray(self.attrib_position_id)
+        #glVertexAttribPointer(self.attrib_normal_id, 4, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), GLvoidp(4*sizeof(GLfloat)))
+        #glEnableVertexAttribArray(self.attrib_normal_id)
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0)
+        #glBindBuffer(GL_ARRAY_BUFFER, 0)
 
-        glBindVertexArray(0)
+        #glBindVertexArray(0)
 
         glUseProgram(0)
 
@@ -445,8 +447,9 @@ class LedVisualizer:
         return self.visualizer_thread.is_alive()
 
     def _keyboard_used(self, key, x, y):
-        if key is b'd':
-            self.debug = not self.debug
+        #if key is b'd':
+        #    self.debug = not self.debug
+        pass
 
     def _bind_uniforms(self):
         glUniform4fv(self.attrib_led_position_id, self.n_leds, self.led_position_buffer)
