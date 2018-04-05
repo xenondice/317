@@ -6,7 +6,7 @@ COLOR_FROM = 'green'
 COLOR_TO = 'red'
 SIMULATION = True
 ACTIVE_MODEL_NAME = 'cube'
-PROGRAM = 'smily'
+PROGRAM = 'websocket'
 
 def _load_model(model_name):
     model_file = open('models/{}.json'.format(model_name))

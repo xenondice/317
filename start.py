@@ -4,6 +4,10 @@ from colour import Color
 from random import randint
 from math import pi
 import time
+from socket import *
+import json
+
+connection = socket(AF_INET, SOCK_STREAM)
 
 def setup():
     if SIMULATION:
@@ -11,6 +15,7 @@ def setup():
     else:
         print("Non virtual not supported yet")
         exit()
+    connection.connect(("127.0.0.1/data/1000/", 6780))
 
 def update(colors):
     if SIMULATION:
@@ -90,6 +95,20 @@ def program_smily(led_colors):
         update(led_colors)
         time.sleep(1/60)
 
+def program_websocket(led_colors):
+    recv_data = ""
+    while True:
+        recv_part = connection.recv(4096)
+        print("yo")
+        print(recv_part)
+        recv_data += recv_part
+        if recv_part is "]":
+            break
+    leds = json.loads(recv_data)
+    for i in range(len(leds)):
+        led_colors[i] = leds[i]
+    update(led_colors)
+
 def program_snake(led_colors):
     for i in range(MODEL['led-quantity']):
         n = 200
@@ -111,3 +130,5 @@ if __name__ == "__main__":
             program_snake(led_colors)
         elif PROGRAM == 'smily':
             program_smily(led_colors)
+        elif PROGRAM == 'websocket':
+            program_websocket(led_colors)
