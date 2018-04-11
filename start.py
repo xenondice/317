@@ -4,10 +4,8 @@ from colour import Color
 from random import randint
 from math import pi
 import time
-from socket import *
+import websocket
 import json
-
-connection = socket(AF_INET, SOCK_STREAM)
 
 def setup():
     if SIMULATION:
@@ -15,7 +13,6 @@ def setup():
     else:
         print("Non virtual not supported yet")
         exit()
-    connection.connect(("127.0.0.1/data/1000/", 6780))
 
 def update(colors):
     if SIMULATION:
@@ -96,18 +93,28 @@ def program_smily(led_colors):
         time.sleep(1/60)
 
 def program_websocket(led_colors):
-    recv_data = ""
-    while True:
-        recv_part = connection.recv(4096)
-        print("yo")
-        print(recv_part)
-        recv_data += recv_part
-        if recv_part is "]":
-            break
-    leds = json.loads(recv_data)
-    for i in range(len(leds)):
-        led_colors[i] = leds[i]
-    update(led_colors)
+    websocket.enableTrace(True)
+    def on_close(ws):
+        print("Connection closed")
+        exit()
+    def on_error(ws, error):
+        print("Connection error: {}".format(error))
+        exit()
+    def on_open(ws):
+        print("Connection established")
+    def on_message(ws, message):
+        leds = json.loads(message)
+        for i in range(len(leds)):
+            led_colors[i*3] = leds[i]
+            led_colors[i*3+1] = leds[i]
+            led_colors[i*3+2] = leds[i]
+        update(led_colors)
+    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/1000/",
+    on_message = on_message,
+    on_error = on_error,
+    on_close = on_close)
+    ws.on_open = on_open
+    ws.run_forever()
 
 def program_snake(led_colors):
     for i in range(MODEL['led-quantity']):
@@ -132,3 +139,4 @@ if __name__ == "__main__":
             program_smily(led_colors)
         elif PROGRAM == 'websocket':
             program_websocket(led_colors)
+            break
