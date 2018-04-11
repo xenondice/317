@@ -6,6 +6,7 @@ from math import pi
 import time
 import websocket
 import json
+import sys
 
 def setup():
     if SIMULATION:
@@ -109,7 +110,7 @@ def program_websocket(led_colors):
             led_colors[i*3+1] = leds[i]
             led_colors[i*3+2] = leds[i]
         update(led_colors)
-    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/1000/",
+    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/200/",
     on_message = on_message,
     on_error = on_error,
     on_close = on_close)
@@ -128,6 +129,15 @@ def program_snake(led_colors):
         time.sleep(1.0/60)
 
 if __name__ == "__main__":
+    """ TODO
+    Able to specify output source (virtual or usb),
+    input source (server ip, file, nothing),
+    program/filter (heatmap, random, smile, etc),
+    refreshrate (100ms),
+    model (cube, small-cube, error message if imcompatible filter)
+    start.py --out virtual --in "127.0.0.1" --fps 10 --filter heatmap --model cube
+    """
+    
     setup()
 
     led_colors = [0] * (3*MODEL['led-quantity'])

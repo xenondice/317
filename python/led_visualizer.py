@@ -455,6 +455,7 @@ class LedVisualizer:
         glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
     def _mouse_used(self, button, state, x, y):
+        print("press")
         if button == GLUT_LEFT_BUTTON:
             if state == GLUT_UP:
                 self.key_down_left_mouse = False
