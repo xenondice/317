@@ -234,8 +234,8 @@ class LedVisualizer:
         glutCreateWindow(self.window_title)
         glutDisplayFunc(self._render)
         glutIdleFunc(self._render)
-        if bool(glutMouseWheelFunc):
-            glutMouseWheelFunc(self._mouse_scroll_used)
+        glutMouseFunc(self._mouse_used)
+        glutMouseWheelFunc(self._mouse_scroll_used)
         glutKeyboardFunc(self._keyboard_used)
         glutMotionFunc(self._motion)
         glutReshapeFunc(self._resize)

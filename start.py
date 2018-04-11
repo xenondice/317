@@ -121,7 +121,7 @@ def program_websocket(led_colors):
             led_colors[i*3+1] = val
             led_colors[i*3+2] = val
         update(led_colors)
-    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/200/",
+    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/1000/",
     on_message = on_message,
     on_error = on_error,
     on_close = on_close)
@@ -147,6 +147,7 @@ if __name__ == "__main__":
     refreshrate (100ms),
     model (cube, small-cube, error message if imcompatible filter)
     start.py --out virtual --in "127.0.0.1" --fps 10 --filter heatmap --model cube
+    Blink red if no connection
     """
     
     setup()
