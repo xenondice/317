@@ -6,19 +6,28 @@ from math import pi
 import time
 import websocket
 import json
+import sys
+import python.port_finder as pf
+import serial
+
+ser = None
 
 def setup():
+    global ser
     if SIMULATION:
         visualizer_init()
     else:
-        print("Non virtual not supported yet")
-        exit()
+        port = pf.find_arduino_port()
+        if(port == None):
+            sys.exit("Couldn't find arduino port")
 
+        ser = serial.Serial(port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
+        
 def update(colors):
     if SIMULATION:
         visualizer_update(colors)
     else:
-        pass
+        ser.write(colors)
 
 def running():
     if SIMULATION:
@@ -105,11 +114,14 @@ def program_websocket(led_colors):
     def on_message(ws, message):
         leds = json.loads(message)
         for i in range(len(leds)):
-            led_colors[i*3] = leds[i]
-            led_colors[i*3+1] = leds[i]
-            led_colors[i*3+2] = leds[i]
+            val = leds[i]
+            if val > 255:
+                val = 255
+            led_colors[i*3] = val
+            led_colors[i*3+1] = val
+            led_colors[i*3+2] = val
         update(led_colors)
-    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/1000/",
+    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/200/",
     on_message = on_message,
     on_error = on_error,
     on_close = on_close)
@@ -128,9 +140,18 @@ def program_snake(led_colors):
         time.sleep(1.0/60)
 
 if __name__ == "__main__":
+    """ TODO
+    Able to specify output source (virtual or usb),
+    input source (server ip, file, nothing),
+    program/filter (heatmap, random, smile, etc),
+    refreshrate (100ms),
+    model (cube, small-cube, error message if imcompatible filter)
+    start.py --out virtual --in "127.0.0.1" --fps 10 --filter heatmap --model cube
+    """
+    
     setup()
 
-    led_colors = [0] * (3*MODEL['led-quantity'])
+    led_colors = bytearray([0] * (3*MODEL['led-quantity']))
     
     while running():
         if PROGRAM == 'snake':
