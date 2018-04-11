@@ -5,7 +5,6 @@ import serial
 import time
 import sys
 import port_finder as pf
-#import ../led-visulizer as lv
 from constants import BAUDRATE, SIMULATION
 
 # Initialize serial communication, 8 data bits, no parity 1 stop bit

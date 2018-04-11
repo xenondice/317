@@ -7,8 +7,7 @@ import time
 import websocket
 import json
 import sys
-import python.port_finder as pf
-import serial
+import python.serial_communication
 
 ser = None
 
@@ -22,7 +21,7 @@ def setup():
             sys.exit("Couldn't find arduino port")
 
         ser = serial.Serial(port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
-        
+
 def update(colors):
     if SIMULATION:
         visualizer_update(colors)
@@ -39,7 +38,7 @@ def program_smily(led_colors):
     if MODEL['name'] != 'cube':
         print("Model not supported by current program")
         exit()
-    
+
     for x in range(10):
         for y in range(5):
             top_id = MODEL['led-groups']['top'][y][x]
@@ -113,6 +112,7 @@ def program_websocket(led_colors):
         print("Connection established")
     def on_message(ws, message):
         leds = json.loads(message)
+        print(leds)
         for i in range(len(leds)):
             val = leds[i]
             if val > 255:
@@ -121,7 +121,11 @@ def program_websocket(led_colors):
             led_colors[i*3+1] = val
             led_colors[i*3+2] = val
         update(led_colors)
+<<<<<<< Updated upstream
     ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/1000/",
+=======
+    ws = websocket.WebSocketApp("ws://10.22.65.72:6780/data/2000/",
+>>>>>>> Stashed changes
     on_message = on_message,
     on_error = on_error,
     on_close = on_close)
@@ -149,11 +153,11 @@ if __name__ == "__main__":
     start.py --out virtual --in "127.0.0.1" --fps 10 --filter heatmap --model cube
     Blink red if no connection
     """
-    
+
     setup()
 
     led_colors = bytearray([0] * (3*MODEL['led-quantity']))
-    
+
     while running():
         if PROGRAM == 'snake':
             program_snake(led_colors)
