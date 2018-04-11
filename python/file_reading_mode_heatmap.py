@@ -1,8 +1,11 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import random as rand
+
 import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from colour import Color
+
 
 def plotSpikes(data, N_ROWS):
     fig = plt.figure()
@@ -10,7 +13,7 @@ def plotSpikes(data, N_ROWS):
     for i in range(N_ROWS):
         spikes, _ = spikeDetection(data.iloc[i])
         setupFigureFrame(spikes, ax, "green", "none")
-        plt.title("Iteration: " + str(i) + "\nTime: " + str(i/10000) +"s")
+        plt.title("Iteration: " + str(i) + "\nTime: " + str(i / 10000) + "s")
         plt.draw()
         plt.pause(0.001)
         ax.clear()
@@ -23,7 +26,7 @@ def frequenzyPlot(data, N_ROWS):
     n_triggers = np.zeros(60)
     for i in range(N_ROWS):
         spikes, _ = spikeDetection(data.iloc[i])
-        print("triggers in frequency :" , i)
+        print("triggers in frequency :", i)
         for j in range(len(spikes)):
             if spikes[j] == True:
                 n_triggers[j] += 1
@@ -38,21 +41,21 @@ def frequenzyPlot(data, N_ROWS):
     for i in range(len(n_triggers)):
         if n_triggers[i] <= color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[0].get_hex_l())
-        elif color_groups < n_triggers[i] <= 2*color_groups:
+        elif color_groups < n_triggers[i] <= 2 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[1].get_hex_l())
-        elif 2*color_groups < n_triggers[i] <= 3*color_groups:
+        elif 2 * color_groups < n_triggers[i] <= 3 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[2].get_hex_l())
-        elif 3*color_groups < n_triggers[i] <= 4*color_groups:
+        elif 3 * color_groups < n_triggers[i] <= 4 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[3].get_hex_l())
-        elif 4*color_groups < n_triggers[i] <= 5*color_groups:
+        elif 4 * color_groups < n_triggers[i] <= 5 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[4].get_hex_l())
-        elif 5*color_groups < n_triggers[i] <= 6*color_groups:
+        elif 5 * color_groups < n_triggers[i] <= 6 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[5].get_hex_l())
-        elif 6*color_groups < n_triggers[i] <= 7*color_groups:
+        elif 6 * color_groups < n_triggers[i] <= 7 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[6].get_hex_l())
-        elif 7*color_groups < n_triggers[i] <= 8*color_groups:
+        elif 7 * color_groups < n_triggers[i] <= 8 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[7].get_hex_l())
-        elif 8*color_groups < n_triggers[i] <= 9*color_groups:
+        elif 8 * color_groups < n_triggers[i] <= 9 * color_groups:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[8].get_hex_l())
         else:
             genPatches(ax, x_pos, y_pos, x_size, y_size, colors[9].get_hex_l())
@@ -115,7 +118,7 @@ def intesityPlot(data, N_ROWS):
             else:
                 x_pos += x_size + 0.2
                 k += 1
-        plt.title("Iteration: " + str(i) + "\nTime: " + str(i/10000) +"s")
+        plt.title("Iteration: " + str(i) + "\nTime: " + str(i / 10000) + "s")
         plt.ylim([0, 7])
         plt.xlim([0, 11])
         plt.draw()
@@ -125,8 +128,7 @@ def intesityPlot(data, N_ROWS):
 
 def genColorGradient(from_color, to_color):
     color1 = Color(from_color)
-    return list(color1.range_to(Color(to_color),10))
-
+    return list(color1.range_to(Color(to_color), 10))
 
 
 def setupFigureFrame(LED, ax, true_color, false_color):
@@ -164,7 +166,7 @@ def genPatches(ax, x_pos, y_pos, x_size, y_size, color):
 
 # input: dp.DataFrame & node list (f.ex [0, 9 11])
 def plotSignal(data, nodes, subplot):
-    data = data.ix[:,nodes]
+    data = data.ix[:, nodes]
     data.plot(subplots=subplot)
     plt.xlabel("Time [s]")
     plt.ylabel("Voltage [pV]")
@@ -172,51 +174,102 @@ def plotSignal(data, nodes, subplot):
 
 
 # Returns pd.DataFrame with time [s] as index.
-def readCSV(fileName, N_ROWS, skip_rows):
-    return pd.read_csv(fileName,  skiprows=skip_rows, nrows=N_ROWS, index_col=0)
-
+def readCSV(fileName, N_ROWS, skip_rows=6):
+    return pd.read_csv(fileName, skiprows=skip_rows, nrows=N_ROWS, index_col=0)
 
 
 def spikeDetection(data):
     n_colums = data.shape[0]
-    spikes = [False]*n_colums
+    spikes = [False] * n_colums
     values = np.zeros(n_colums)
-    threshold = -1*10**7
+    threshold = -1 * 10 ** 7
 
     for i in range(n_colums):
         values[i] = data[i]
         if data[i] <= threshold:
             spikes[i] = True
-            print("Node ID:",i,"Value:",data[i], "[pV]")
+            print("Node ID:", i, "Value:", data[i], "[pV]")
     return spikes, values
 
 
 def iterate(filename, n_rows, num_of_iterations):
     for x in range(num_of_iterations):
-        data = readCSV(filename, n_rows, x*n_rows)
+        data = readCSV(filename, n_rows, x * n_rows)
         frequenzyPlot(data, n_rows)
 
 
+def plot_spikes_live():
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    data = np.zeros(60)
+    while True:
+        for i in range(len(data)):
+            data[i] = rand.randint(0, 9)
+        print(data)
+        colors = genColorGradient("red", "yellow")
+        color_groups = data.max() / 10
+        x_pos = 0.6
+        y_pos = 0.6
+        x_size = 0.8
+        y_size = 0.8
+        k = 0
+        print(colors[0].get_hex_l())
+        for j in range(len(data)):
+            if data[j] <= color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[0].get_hex_l())
+            elif color_groups < data[j] <= 2 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[1].get_hex_l())
+            elif 2 * color_groups < data[j] <= 3 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[2].get_hex_l())
+            elif 3 * color_groups < data[j] <= 4 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[3].get_hex_l())
+            elif 4 * color_groups < data[j] <= 5 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[4].get_hex_l())
+            elif 5 * color_groups < data[j] <= 6 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[5].get_hex_l())
+            elif 6 * color_groups < data[j] <= 7 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[6].get_hex_l())
+            elif 7 * color_groups < data[j] <= 8 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[7].get_hex_l())
+            elif 8 * color_groups < data[j] <= 9 * color_groups:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[8].get_hex_l())
+            else:
+                genPatches(ax, x_pos, y_pos, x_size, y_size, colors[9].get_hex_l())
+            if k == 9:
+                y_pos += y_size + 0.2
+                x_pos = 0.6
+                k = 0
+            else:
+                x_pos += x_size + 0.2
+                k += 1
+        plt.title("Iteration: " + str(i) + "\nTime: " + str(i / 10000) + "s")
+        plt.ylim([0, 7])
+        plt.xlim([0, 11])
+        plt.draw()
+        plt.pause(0.01)
+        ax.clear()
+
+
+
 def main():
-    N_ROWS = 100
-    fileName = "data/2017-10-20_MEA2_100000rows_10sec.csv"
-    #data = readCSV(fileName, N_ROWS, 2000)
-    iterate(fileName, N_ROWS, 10)
+    N_ROWS = 10000
+    fileName = "../data/2017-10-20_MEA2_100000rows_10sec.csv"
+    data = readCSV(fileName, N_ROWS)
+    # iterate(fileName, N_ROWS, 10)
     subplot = True
 
     # Done
-    #plotSignal(data, [1, 25, 56], subplot)
+    # plotSignal(data, [1, 25, 56], subplot)
     #plotSpikes(data, N_ROWS)
-    frequenzyPlot(data, N_ROWS)
-
+    # frequenzyPlot(data, N_ROWS)
+    # intesityPlot(data, N_ROWS)
 
     # In development
-    #intesityPlot(data, N_ROWS)
+    plot_spikes_live()
 
 
 if __name__ == "__main__":
     main()
 
-
-    #TODO Generalize plotSpikes
-    #TODO Plot cumulative values (using generalization of plotSpikes)
+    # TODO Generalize plotSpikes
+    # TODO Plot cumulative values (using generalization of plotSpikes)
