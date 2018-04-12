@@ -37,7 +37,7 @@ def data_to_hex(data, settings):
     return hex_data
 
 
-def data_to_bytearray_write(data, settings):
+def data_to_bytearray(data, settings):
     hex_array = data_to_hex(data, settings)
     num_leds_cluster = int(settings.get_num_leds() / 60)
     byte_arr = bytearray([0, 0, 0] * settings.get_num_leds())
