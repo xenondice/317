@@ -145,8 +145,9 @@ if __name__ == "__main__":
     input source (server ip, file, nothing),
     program/filter (heatmap, random, smile, etc),
     refreshrate (100ms),
-    model (cube, small-cube, error message if imcompatible filter)
-    start.py --out virtual --in "127.0.0.1" --fps 10 --filter heatmap --model cube
+    model (cube, small-cube, dome, error message if imcompatible filter),
+    type of data from neurons (average voltage, numer of spikes)
+    start.py --out virtual --in "127.0.0.1" --fps 10 --filter heatmap --model cube --datatype spikes
     Blink red if no connection
     """
     
