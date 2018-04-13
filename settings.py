@@ -1,6 +1,6 @@
 import json
 
-BAUDRATE = 115200
+BAUD_RATE = 115200
 NUM_LEDS = 240
 COLOR_FROM = 'green'
 COLOR_TO = 'red'
