@@ -18,7 +18,7 @@ NEURAL_INTERPETER = 'random'
 NERUAL_DATA_TYPE = 'frequency'
 
 # Visualization
-LED_REFRESHES_PER_SECOND = 5
+LED_REFRESHES_PER_SECOND = 60
 LED_MODEL_NAME = 'large_cube'
 
 

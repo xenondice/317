@@ -49,20 +49,21 @@ def main():
         _presenter.refresh(_led_colors)
 
     if _source is None:
-        past_time = time.time()
         frame_time = 1.0/settings.LED_REFRESHES_PER_SECOND
         neuron_data = [0] * settings.NEURAL_ELECTRODES_TOTAL
         while _presenter.running():
+            past_time = time.time()
+            
             for i in range(len(neuron_data)):
                 neuron_data[i] = 0
             loop(neuron_data)
-            now_time = time.time()
-            delta = now_time - past_time
-            past_time = now_time
+
+            delta = time.time() - past_time
             sleep_time = frame_time - delta
             if sleep_time < 0:
                 print("Can't keep up!")
                 sleep_time = 0
+            
             time.sleep(sleep_time)
     else:
         pass
