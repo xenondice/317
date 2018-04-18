@@ -28,7 +28,7 @@ General:
     The type of data gathered from the neurons and passed to the interpeter.
 [--model] <name>
     Name of the model file to use.
-    It has to exist as a .json file in neural_presenters/led_models.
+    It has to exist as a .json file in led_models.
 [--interpeter] <name>
     Name of the script that reads neural data from the input source,
     and returns the LED colors for the model.
