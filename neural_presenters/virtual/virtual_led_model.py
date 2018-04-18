@@ -11,7 +11,7 @@ from random import randint
 from ctypes import sizeof
 from numpy import ones, clip, sign, arange, linspace, array, cross
 from math import sin, cos, pow, pi, sqrt
-from python.constants import MODEL
+from system.settings import LED_MODEL
 import time
 
 class LedVisualizer:
@@ -82,9 +82,9 @@ class LedVisualizer:
     window_height = 600
     window_title = b'LED Visualizer'
 
-    def __init__(self, model):
-        self.model = model
-        self.n_leds = len(model['led-strip'])
+    def __init__(self):
+        self.model = LED_MODEL
+        self.n_leds = len(self.model['led-strip'])
         self.last_time = time.time()
         self.led_colors = [0] * (self.n_leds * 3)
 
@@ -440,7 +440,10 @@ class LedVisualizer:
 
         glUseProgram(0)
 
-    def refresh(self):
+    def refresh(self, colors):
+        for i in range(self.n_leds):
+            for j in range(3):
+                self.led_colors[i*3+j] = colors[i*3+j]
         self.refresh_queued = True
 
     def running(self):
@@ -478,20 +481,3 @@ class LedVisualizer:
             self.camera_vertical_angle = clip(temp, 0.001, pi - 0.001)
             self.mouse_last_x = x
             self.mouse_last_y = y
-
-
-_visualizer = None
-
-def visualizer_init():
-    global _visualizer
-    _visualizer = LedVisualizer(MODEL)
-
-def visualizer_update(colors):
-    global _visualizer
-    for i in range(_visualizer.n_leds):
-        for j in range(3):
-            _visualizer.led_colors[i*3+j] = colors[i*3+j]
-    _visualizer.refresh()
-
-def visualizer_running():
-    return _visualizer.running()

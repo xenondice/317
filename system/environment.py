@@ -2,6 +2,8 @@ import system.settings as settings
 import json
 
 def setup(args):
+
+    # Setup arguments
     i = 0
     
     while i < len(args):
@@ -9,8 +11,8 @@ def setup(args):
         i += 1
 
         if arg == "--help":
-            print("""
-Script for visualizing neural data.
+            print(
+"""Script for visualizing neural data.
 Defaults to showing a virtual model of random data.
 
 General:
@@ -48,7 +50,7 @@ Presenter (last argument will override the rest):
     Use an Arduino over USB to control a physical model.
 [--2d-plot]
     2D grid plot / heatmap.
-            """)
+    This overrides the model file.""")
             exit(0)
         elif arg == "--refresh-rate":
             subarg = _get_float_subarg(i, args, "refresh rate")
@@ -90,14 +92,17 @@ Presenter (last argument will override the rest):
             settings.NEURAL_PRESENTER = "serial"
         elif arg == "--2d-plot":
             settings.NEURAL_PRESENTER = "2d-plot"
+            settings.LEDS_TOTAL = settings.NEURAL_ELECTRODES_TOTAL
+            settings.LED_MODEL_NAME = "none"
     
-    # Setup derived variables
-    try:
-        settings.LED_MODEL = _load_led_model(settings.LED_MODEL_NAME)
-    except IOError:
-        raise SyntaxError("Could not load model file!")
+    # Setup led model
+    if settings.NEURAL_PRESENTER != "2d-plot":
+        try:
+            settings.LED_MODEL = _load_led_model(settings.LED_MODEL_NAME)
+        except IOError:
+            raise SyntaxError("Could not load model file!")
     
-    settings.LEDS_TOTAL = settings.LED_MODEL['led-quantity']
+        settings.LEDS_TOTAL = settings.LED_MODEL['led-quantity']
 
 def _get_subarg(i, args, name):
     error = "No subargument for {}!".format(name)
@@ -127,7 +132,7 @@ def _get_float_subarg(i, args, name):
     return subarg
 
 def _load_led_model(model_name):
-    model_file = open('models/{}.json'.format(model_name))
+    model_file = open('led_models/{}.json'.format(model_name))
     model = json.loads(model_file.read())
     model_file.close()
     model['name'] = model_name
