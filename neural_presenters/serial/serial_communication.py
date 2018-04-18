@@ -4,8 +4,7 @@ import serial
 import sys
 import time
 import serial.tools.list_ports
-#from constants import BAUDRATE, SIMULATION
-# TODO fix import of baudrate
+from system.settings import
 
 class SerialInterface:
     def __init__(self):
@@ -13,7 +12,7 @@ class SerialInterface:
         if port == None:
             sys.exit("Couldn't find arduino port")
          # Initialize serial communication, 8 data bits, no parity 1 stop bit
-        self.ser = serial.Serial(port, 115200, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
+        self.ser = serial.Serial(port, SERIAL_BAUD_RATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
         time.sleep(2)
 
     def _find_arduino_port(self):
@@ -31,10 +30,10 @@ class SerialInterface:
     def read(self, num_bytes):
         return self.ser.read(num_bytes)
 
-def main():  # This is just a testing function setting al leds to red
+def main():  # This is just a testing function setting all leds to red
     testdata1 = bytearray([255, 0, 0]*240)
-    conn = Serial()
-    conn.write(testdata1)
+    conn = SerialInterface()
+    conn.refresh(testdata1)
 
 if __name__ == '__main__':
     main()

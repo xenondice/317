@@ -9,7 +9,7 @@ class FrequencyPlot:
         self.intensities = [0]*60
         self.initialized = False
 
-    def update(self, input_data, output_data):
+    def render(self, input_data, output_data):
         median = statistics.median(sorted(input_data))
         max_frequency = max(input_data)
         min_frequency = min(input_data)

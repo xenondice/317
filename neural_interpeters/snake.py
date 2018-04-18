@@ -1,13 +1,12 @@
-#import system.settings as settings
+import system.settings as settings
 
-# Should take None as input_data
 class Snake:
     def __init__(self):
         self.current_led = 0
         self.color = 0
-        self.num_leds = 240 # TODO use settings
+        self.num_leds = settings.LEDS_TOTAL
 
-    def update(self, input_data, output_data):
+    def render(self, input_data, output_data):
         for i in range(self.current_led, -1, -1):
             output_data[i*3 + self.color] = max(255 - 1*(self.current_led -i), 0)
         self.current_led += 1
@@ -18,4 +17,3 @@ class Snake:
                 self.color == 0
                 for i in range(self.num_leds * 3):
                     output_data[i] = 0
-)
