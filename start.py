@@ -3,11 +3,9 @@ import time
 import sys
 import system.settings as settings
 import system.environment as environment
-#from neural_presenters.virtual.virtual_led_model import *
+#from neural_presenters.virtual.virtual_led_model import Virtual
 #from neural_presenters.serial.serial_communication import *
 #from neural_presenters.2d-plot.heatmap import *
-
-_past_time = time.time()
 
 def main():
     presenter = None
@@ -31,15 +29,7 @@ def main():
         raise NotImplementedError()
 
     def loop(data):
-        global _past_time
-
         led_colors = interpeter.render(data)
-
-        now_time = time.time()
-        delta_time = now_time - _past_time
-        _past_time = now_time
-        time.sleep(1.0/settings.LED_REFRESHES_PER_SECOND - delta_time)
-        
         presenter.refresh(led_colors)
 
     source.loop_function = loop
