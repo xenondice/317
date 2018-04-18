@@ -4,7 +4,7 @@ import serial
 import sys
 import time
 import serial.tools.list_ports
-from system.settings import
+import system.settings as settings
 
 class SerialInterface:
     def __init__(self):
