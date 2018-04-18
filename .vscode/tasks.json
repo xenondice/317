@@ -4,9 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Start",
+            "label": "start",
             "type": "shell",
-            "command": "${config:python.pythonPath} \"Map structure\"/start.py",
+            "command": "${config:python.pythonPath} start.py",
             "group": {
                 "kind": "build",
                 "isDefault": true
