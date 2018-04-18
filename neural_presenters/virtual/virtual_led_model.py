@@ -1,5 +1,5 @@
 import os
-os.environ['PATH'] = 'libs' + ';' + os.environ['PATH']
+os.environ['PATH'] = 'neural_presenters/virtual/libs' + ';' + os.environ['PATH']
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
@@ -14,7 +14,7 @@ from math import sin, cos, pow, pi, sqrt
 from system.settings import LED_MODEL
 import time
 
-class LedVisualizer:
+class VirtualLedModel:
     """
     Simulates the LED cube in different configurations in OpenGL.
     You have to provide a json dictionary at instantiation, this should refer to a json file.
@@ -82,11 +82,11 @@ class LedVisualizer:
     window_height = 600
     window_title = b'LED Visualizer'
 
-    def __init__(self):
-        self.model = LED_MODEL
+    def __init__(self, led_colors, model):
+        self.model = model
         self.n_leds = len(self.model['led-strip'])
         self.last_time = time.time()
-        self.led_colors = [0] * (self.n_leds * 3)
+        self.led_colors = led_colors # [0] * (self.n_leds * 3)
 
         def thread_func():
             self._init_glut()
@@ -119,8 +119,8 @@ class LedVisualizer:
             raise EnvironmentError('Missing shader objects')
 
         # Open shader files
-        vert_file = open('shaders/enclosure.vert')
-        frag_file = open('shaders/enclosure.frag')
+        vert_file = open('neural_presenters/virtual/shaders/enclosure.vert')
+        frag_file = open('neural_presenters/virtual/shaders/enclosure.frag')
 
         # Compile
         self.program = compileProgram(
@@ -133,8 +133,8 @@ class LedVisualizer:
         frag_file.close()
 
         # Open shader files
-        vert_file = open('shaders/debug.vert')
-        frag_file = open('shaders/debug.frag')
+        vert_file = open('neural_presenters/virtual/shaders/debug.vert')
+        frag_file = open('neural_presenters/virtual/shaders/debug.frag')
 
         self.debug_program = compileProgram(
             compileShader(vert_file.read(), GL_VERTEX_SHADER),
@@ -441,9 +441,9 @@ class LedVisualizer:
         glUseProgram(0)
 
     def refresh(self, colors):
-        for i in range(self.n_leds):
-            for j in range(3):
-                self.led_colors[i*3+j] = colors[i*3+j]
+        #for i in range(self.n_leds):
+        #    for j in range(3):
+        #        self.led_colors[i*3+j] = colors[i*3+j]
         self.refresh_queued = True
 
     def running(self):
@@ -458,7 +458,6 @@ class LedVisualizer:
         glUniform4fv(self.attrib_led_color_id, self.n_leds, self.led_color_buffer)
 
     def _mouse_used(self, button, state, x, y):
-        print("press")
         if button == GLUT_LEFT_BUTTON:
             if state == GLUT_UP:
                 self.key_down_left_mouse = False

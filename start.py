@@ -3,47 +3,72 @@ import time
 import sys
 import system.settings as settings
 import system.environment as environment
-#from neural_presenters.virtual.virtual_led_model import *
-#from neural_presenters.serial.serial_communication import *
+from neural_presenters.virtual.virtual_led_model import VirtualLedModel
+from neural_presenters.serial.serial_communication import SerialInterface
+#from neural_sources.file.server_simulator import csv
+#from neural_sources.server.client import program_websocket
+from neural_interpeters.random_mode import RandomMode
 #from neural_presenters.2d-plot.heatmap import *
 
-_past_time = time.time()
+_presenter = None
+_source = None
+_interpeter = None
+_led_colors = None
 
 def main():
-    presenter = None
+    global _led_colors, _presenter, _source, _interpeter
+    _led_colors = bytearray([0] * (3*settings.LEDS_TOTAL))
+
     if settings.NEURAL_PRESENTER == "virtual":
-        raise NotImplementedError()
+        _presenter = VirtualLedModel(_led_colors, settings.LED_MODEL)
     elif settings.NEURAL_PRESENTER == "serial":
-        raise NotImplementedError()
+        _presenter = SerialInterface()
     elif settings.NEURAL_PRESENTER == "2d-plot":
         raise NotImplementedError()
+    else:
+        raise RuntimeError("Invalid presenter!")
     
-    source = None
     if settings.NEURAL_SOURCE == "file":
-        raise NotImplementedError() #read file
-    if settings.NEURAL_SOURCE == "server":
+        #_source = csv(settings.NEURAL_DATA_FILE, 1, 1)
         raise NotImplementedError()
-    if settings.NEURAL_SOURCE == "none":
+    elif settings.NEURAL_SOURCE == "server":
         raise NotImplementedError()
+    elif settings.NEURAL_SOURCE == "none":
+        _source = None
+    else:
+        raise RuntimeError("Invalid source!")
     
-    interpeter = None
     if settings.NEURAL_INTERPETER == "random":
-        raise NotImplementedError()
+        _interpeter = RandomMode()
+    else:
+        raise RuntimeError("Invalid interpeter!")
 
     def loop(data):
-        global _past_time
+        global _interpeter, _presenter, _led_colors
+        _interpeter.render(data, _led_colors)
+        _presenter.refresh(_led_colors)
 
-        led_colors = interpeter.render(data)
+    if _source is None:
+        frame_time = 1.0/settings.LED_REFRESHES_PER_SECOND
+        neuron_data = [0] * settings.NEURAL_ELECTRODES_TOTAL
+        while _presenter.running():
+            past_time = time.time()
+            
+            for i in range(len(neuron_data)):
+                neuron_data[i] = 0
+            loop(neuron_data)
 
-        now_time = time.time()
-        delta_time = now_time - _past_time
-        _past_time = now_time
-        time.sleep(1.0/settings.LED_REFRESHES_PER_SECOND - delta_time)
-        
-        presenter.refresh(led_colors)
-
-    source.loop_function = loop
-    source.start()
+            delta = time.time() - past_time
+            sleep_time = frame_time - delta
+            if sleep_time < 0:
+                print("Can't keep up!")
+                sleep_time = 0
+            
+            time.sleep(sleep_time)
+    else:
+        pass
+        #_source.loop_function = loop
+        #_source.start()
 
 if __name__ == "__main__":
     try:
