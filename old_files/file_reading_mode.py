@@ -65,7 +65,7 @@ def intensity_plot(data, N_ROWS):
         leds = np.zeros(60)
         for j in range(len(volt)):
             leds[j] = color_grouping(j, volt, volt_per_group)
-        #print(leds)
+        print(leds)
         itc.intensity_to_bytearray_write(leds, 'yellow', 'red')
         time.sleep(0.5)
 

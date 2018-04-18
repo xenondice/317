@@ -1,6 +1,6 @@
 from colour import Color
 from random import randint
-from constants import NUM_LEDS
+NUM_LEDS = 240
 import serial_communication as serial
 
 def gen_color_gradient(from_color, to_color):

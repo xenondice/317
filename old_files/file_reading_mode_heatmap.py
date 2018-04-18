@@ -253,19 +253,19 @@ def plot_spikes_live():
 
 def main():
     N_ROWS = 10000
-    fileName = "../data/2017-10-20_MEA2_100000rows_10sec.csv"
+    fileName = "../neural_sources/file/data/2017-10-20_MEA2_100000rows_10sec.csv"
     data = readCSV(fileName, N_ROWS)
     # iterate(fileName, N_ROWS, 10)
     subplot = True
 
     # Done
     # plotSignal(data, [1, 25, 56], subplot)
-    #plotSpikes(data, N_ROWS)
+    plotSpikes(data, N_ROWS)
     # frequenzyPlot(data, N_ROWS)
     # intesityPlot(data, N_ROWS)
 
     # In development
-    plot_spikes_live()
+    #plot_spikes_live()
 
 
 if __name__ == "__main__":

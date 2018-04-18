@@ -1,39 +1,47 @@
 # This is for serial communication via uart with an arduino
+# python3
 
 import serial
-import sys
 import time
-import serial.tools.list_ports
-#from constants import BAUDRATE, SIMULATION
+import sys
+import port_finder as pf
+import system.settings as settings
+from constants import BAUDRATE, SIMULATION
 
-class SerialInterface:
-    def __init__(self):
-        port = self._find_arduino_port()
-        if port == None:
-            sys.exit("Couldn't find arduino port")
-         # Initialize serial communication, 8 data bits, no parity 1 stop bit
-        self.ser = serial.Serial(port, 115200, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
-        time.sleep(2)
+# Initialize serial communication, 8 data bits, no parity 1 stop bit
+port = pf.find_arduino_port()
+if(port == None):
+    sys.exit("Couldn't find arduino port")
 
-    def _find_arduino_port(self):
-        ports = list(serial.tools.list_ports.comports())
-        for port in ports:
-            if ("arduino" in str(port).lower()):
-                return  str(port).split(" -")[0]
-            else:
-                return None
+ser = serial.Serial(port, settings.SERIAL_BAUD_RATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
+time.sleep(2)
 
-    def refresh(self, data):
-        self.ser.write(data)
+def serial_write(data):
+    if not SIMULATION:
+        ser.write(data)
+    else:
+        pass
 
-    # Included for completenesss, not actually used in our program
-    def read(self, num_bytes):
-        return self.ser.read(num_bytes)
+# Read a number of bytes
+def serial_read(bytes):
+    if not SIMULATION:
+        return ser.read(bytes)
 
-def main():  # This is just a testing function setting al leds to red
+def main():  # This is just a testing function
     testdata1 = bytearray([255, 0, 0]*240)
-    conn = Serial()
-    conn.write(testdata1)
+    testdata2 = bytearray([0, 255, 0]*240)
+    testdata3 = bytearray([0, 0, 255]*240)
+    testdata4 = bytearray([255, 255, 255]*240)
+    serial_write(testdata4)
+    '''
+    while(True):
+        serialWrite(testdata1)
+        time.sleep(0.3)
+        serialWrite(testdata2)
+        time.sleep(0.3)
+        serialWrite(testdata3)
+        time.sleep(0.3)
+    '''
 
 if __name__ == '__main__':
     main()
