@@ -19,7 +19,7 @@ def program_websocket(led_colors):
             led_colors[i*3+1] = val
             led_colors[i*3+2] = val
         update(led_colors)
-    ws = websocket.WebSocketApp("ws://10.22.65.72:6780/data/2000/"
+    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/2000/"
     on_message = on_message,
     on_error = on_error,
     on_close = on_close)
