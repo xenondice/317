@@ -2,10 +2,18 @@
 
 import serial
 import sys
+import time
 import serial.tools.list_ports
 from constants import BAUDRATE, SIMULATION
 
 class Serial:
+    def _find_arduino_port:
+        ports = list(serial.tools.list_ports.comports())
+        for port in ports:
+            if("arduino" in str(port).lower()):
+                str(port).split(" -")[0]
+        return None
+
     def __init__(self):
         port = _find_arduino_port()
         if(port == None):
@@ -13,13 +21,6 @@ class Serial:
             # Initialize serial communication, 8 data bits, no parity 1 stop bit
         self.ser = serial.Serial(self.port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
         time.sleep(2)
-
-    def _find_arduino_port:
-        ports = list(serial.tools.list_ports.comports())
-        for port in ports:
-            if("arduino" in str(port).lower()):
-                str(port).split(" -")[0]
-        return None
 
     def write(self, data):
         self.ser.write(data)
