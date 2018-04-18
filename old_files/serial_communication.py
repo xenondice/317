@@ -5,6 +5,7 @@ import serial
 import time
 import sys
 import port_finder as pf
+import system.settings as settings
 from constants import BAUDRATE, SIMULATION
 
 # Initialize serial communication, 8 data bits, no parity 1 stop bit
@@ -12,7 +13,7 @@ port = pf.find_arduino_port()
 if(port == None):
     sys.exit("Couldn't find arduino port")
 
-ser = serial.Serial(port, BAUDRATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
+ser = serial.Serial(port, settings.SERIAL_BAUD_RATE, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE)
 time.sleep(2)
 
 def serial_write(data):
