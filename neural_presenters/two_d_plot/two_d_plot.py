@@ -6,14 +6,17 @@ import matplotlib.pyplot as plt
 
 
 class TwoDPlot:
+
+    def running(self):
+        return True # TODO Check if window is closed
+
     def __init__(self):
-        # TODO if wrong model, exit()
-        #if settings.LED_MODEL != '2d-plot':
-        #    sys.exit("Model not supported by current program")
+        if settings.LED_MODEL_NAME != 'none':
+            sys.exit("Model not supported by current program")
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
 
-    def render(self, byte_array):
+    def refresh(self, byte_array):
         self.ax.clear()
         hex_array = self.byte_to_hex(byte_array)
         x_pos = 0.6

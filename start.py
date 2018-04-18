@@ -8,7 +8,7 @@ from neural_presenters.serial.serial_communication import SerialInterface
 #from neural_sources.file.server_simulator import csv
 #from neural_sources.server.client import program_websocket
 from neural_interpeters.random_mode import RandomMode
-#from neural_presenters.2d-plot.heatmap import *
+from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 
 _presenter = None
 _source = None
@@ -24,7 +24,7 @@ def main():
     elif settings.NEURAL_PRESENTER == "serial":
         _presenter = SerialInterface()
     elif settings.NEURAL_PRESENTER == "2d-plot":
-        raise NotImplementedError()
+        _presenter = TwoDPlot()
     else:
         raise RuntimeError("Invalid presenter!")
     
