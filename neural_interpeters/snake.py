@@ -6,7 +6,7 @@ class Snake:
         self.color = 0
         self.num_leds = settings.LEDS_TOTAL
 
-    def update(self, input_data, output_data):
+    def render(self, input_data, output_data):
         for i in range(self.current_led, -1, -1):
             output_data[i*3 + self.color] = max(255 - 1*(self.current_led -i), 0)
         self.current_led += 1
