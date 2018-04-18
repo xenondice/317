@@ -14,14 +14,14 @@ SERVER_PORT = 6780
 NEURAL_PRESENTER = 'virtual'
 NEURAL_SOURCE = 'none'
 NEURAL_INTERPETER = 'random'
-NERUAL_DATA_TYPE = 'spikes'
+NERUAL_DATA_TYPE = 'frequency'
 
 # Visualization
 LED_REFRESHES_PER_SECOND = 5
 LED_MODEL_NAME = 'large_cube'
 
 
-### Derived variables (initialized in start.py) ###
+### Derived variables (initialized in environment.py) ###
 
 LEDS_TOTAL = None
 LED_MODEL = None
