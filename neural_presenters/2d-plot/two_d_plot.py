@@ -1,25 +1,28 @@
 import time
-
+import sys
+import system.settings as settings
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
 
 class TwoDPlot:
-    def __init__(self, byte_array):
+    def __init__(self):
+        # TODO if wrong model, exit()
+        #if settings.LED_MODEL != '2d-plot':
+        #    sys.exit("Model not supported by current program")
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
-        self.hex_array = self.byte_to_hex(byte_array)
-        self.render()
 
-    def render(self):
+    def render(self, byte_array):
         self.ax.clear()
+        hex_array = self.byte_to_hex(byte_array)
         x_pos = 0.6
         y_pos = 0.6
         x_size = 0.8
         y_size = 0.8
         k = 0
-        for i in range(len(self.hex_array)):
-            p = patches.Rectangle((x_pos, y_pos), x_size, y_size, facecolor=self.hex_array[i], edgecolor="black",
+        for i in range(len(hex_array)):
+            p = patches.Rectangle((x_pos, y_pos), x_size, y_size, facecolor=hex_array[i], edgecolor="black",
                                   linewidth=2)
             self.ax.add_patch(p)
             if k == 9:
@@ -47,7 +50,8 @@ class TwoDPlot:
 
 if __name__ == '__main__':
     test_array = [bytearray([255, 0, 0] * 60), bytearray([0, 255, 0] * 60), bytearray([0, 0, 255] * 60)]
+    plot_class = TwoDPlot()
     # start loop
     for byte_array in test_array:
-        TwoDPlot(byte_array)
+        plot_class.render(byte_array)
         time.sleep(1)
