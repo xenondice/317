@@ -17,11 +17,10 @@ class FileServer:
         n_rows, n_columns = data.shape
         spikes = np.zeros((n_rows, n_columns))
         volt = np.zeros((n_rows, n_columns))
-        threshold = -1 * 10 ** 7
         for i in range(n_rows):
             for j in range(n_columns):
                 volt[i][j] = data.iloc[i][j]
-                if volt[i][j] <= threshold:
+                if volt[i][j] <= settings.THRESHOLD:
                     spikes[i][j] = 1
         return spikes, volt
 

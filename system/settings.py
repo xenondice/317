@@ -22,10 +22,10 @@ NEURAL_DATA_TYPE = 'frequency'
 LED_REFRESHES_PER_SECOND = 60
 LED_MODEL_NAME = 'large_cube'
 
+# Spike detection threshold
+THRESHOLD = -1*10**7
 
 ### Derived variables (initialized in environment.py) ###
-
 LEDS_TOTAL = None
 LED_MODEL = None
-
 NEURAL_DATA_FILE = None
