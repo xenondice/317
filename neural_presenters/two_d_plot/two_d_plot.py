@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 class TwoDPlot:
 
     def running(self):
-        return True # TODO Check if window is closed
+        return plt.fignum_exists(self.fig.number)
 
     def __init__(self):
         if settings.LED_MODEL_NAME != 'none':
