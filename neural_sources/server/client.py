@@ -1,4 +1,4 @@
-from system.settings import settings
+import system.settings as settings
 import websocket
 import threading
 import json
@@ -28,16 +28,16 @@ class Client:
         print("Slow connection, nothing received from server")
         self.presenter.refresh(red)
 
-    def _on_close(self):
+    def _on_close(self, ws):
         print("Connection closed")
 
-    def _on_error(self, error):
+    def _on_error(self, ws ,error):
         print("Connection error: {}".format(error))
 
-    def _on_open(self):
+    def _on_open(self, ws):
         print("Connection established")
 
-    def _on_message(self, message):
+    def _on_message(self, ws, message):
         self.timer.cancel()
         self.frequencies = json.loads(message)
         self.loopfunction(self.frequencies)

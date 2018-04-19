@@ -6,7 +6,7 @@ import system.environment as environment
 from neural_presenters.virtual.virtual_led_model import VirtualLedModel
 from neural_presenters.serial.serial_communication import SerialInterface
 from neural_sources.file.file_server import FileServer
-#from neural_sources.server.client import program_websocket
+from neural_sources.server.client import Client
 from neural_interpeters.random_mode import RandomMode
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 
@@ -33,13 +33,10 @@ def main():
         _interpeter.render(data, _led_colors)
         _presenter.refresh(_led_colors)
 
-    def error(message):
-        print(message)
-
     if settings.NEURAL_SOURCE == "file":
-        _source = FileServer(loop, error, _presenter)
+        _source = FileServer(loop, _presenter)
     elif settings.NEURAL_SOURCE == "server":
-        raise NotImplementedError()
+        _source = Client(loop, _presenter)
     elif settings.NEURAL_SOURCE == "none":
         _source = None
     else:
@@ -47,6 +44,8 @@ def main():
     
     if settings.NEURAL_INTERPETER == "random":
         _interpeter = RandomMode()
+    #else if settings.NEURAL_INTERPETER == "snake":
+    #    _interpeter =
     else:
         raise RuntimeError("Invalid interpeter!")
 
