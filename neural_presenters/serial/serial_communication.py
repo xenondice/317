@@ -28,6 +28,9 @@ class SerialInterface:
     def read(self, num_bytes):
         return self.ser.read(num_bytes)
 
+    def running(self):
+        return True
+
 
 # This is just a testing function setting all leds to red
 if __name__ == '__main__':

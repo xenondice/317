@@ -10,6 +10,7 @@ from neural_sources.server.client import Client
 from neural_interpeters.random_mode import RandomMode
 from neural_interpeters.moving_average import MovingAverage
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
+from neural_interpeters.smiley import Smiley
 
 _presenter = None
 _source = None
@@ -47,6 +48,8 @@ def main():
         _interpeter = RandomMode()
     elif settings.NEURAL_INTERPETER == "moving-average":
         _interpeter = MovingAverage()
+    elif settings.NEURAL_INTERPETER == "smiley":
+        _interpeter = Smiley()
     else:
         raise RuntimeError("Invalid interpeter!")
 

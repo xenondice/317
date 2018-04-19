@@ -1,33 +1,29 @@
 import sys
 import system.settings as settings
+from colour import Color
+from math import pi
 
 class Smiley:
     def __init__(self):
-        if settings.LED_MODEL != 'large_cube':
+        if settings.LED_MODEL_NAME != 'large_cube':
             sys.exit("Model not supported by current program")
+    
+    loc = 0
+    tot = 40
+
+    def render(self, input_data, led_colors):
+        for x in range(10):
+            for y in range(5):
+                top_id = settings.LED_MODEL['led-groups']['top'][y][x]
+                if top_id != -1:
+                    led_colors[top_id * 3] = 0
+                    led_colors[top_id * 3 + 1] = 0
+                    led_colors[top_id * 3 + 2] = 0
 
 
 
-    def render(self, input_data, output_data):
-
-
-def program_smily(led_colors):
-    if MODEL['name'] != 'cube':
-        print("Model not supported by current program")
-        exit()
-
-    for x in range(10):
-        for y in range(5):
-            top_id = MODEL['led-groups']['top'][y][x]
-            if top_id != -1:
-                led_colors[top_id * 3] = 0
-                led_colors[top_id * 3 + 1] = 0
-                led_colors[top_id * 3 + 2] = 0
-
-
-
-    n = 40
-    for x in range(40):
+        n = self.tot
+        x = self.loc
         rad = (x/39)*2*pi
         color = Color(hue=(x/39), saturation=1, luminance=0.5)
         ids = [
@@ -48,7 +44,7 @@ def program_smily(led_colors):
             [8, 3]
         ]
         for led in ids:
-            top_id = MODEL['led-groups']['top'][led[1]][led[0]]
+            top_id = settings.LED_MODEL['led-groups']['top'][led[1]][led[0]]
             if top_id != -1:
                 led_colors[top_id * 3] = int(color.get_red()*255)
                 led_colors[top_id * 3 + 1] = int(color.get_green()*255)
@@ -72,10 +68,9 @@ def program_smily(led_colors):
                 else:
                     x_off -= 30
                     side = 'east'
-                led_id = MODEL['led-groups'][side][y][x_off]
+                led_id = settings.LED_MODEL['led-groups'][side][y][x_off]
                 if led_id != -1:
                     led_colors[led_id*3] = int(color.get_red()*255*falloff)
                     led_colors[led_id*3+1] = int(color.get_green()*255*falloff)
                     led_colors[led_id*3+2] = int(color.get_blue()*255*falloff)
-        update(led_colors)
-        time.sleep(1/60)
+        self.loc = (x+1)%n
