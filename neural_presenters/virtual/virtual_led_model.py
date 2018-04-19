@@ -110,7 +110,7 @@ class VirtualLedModel:
         glShadeModel(GL_SMOOTH)
         glEnable(GL_POLYGON_SMOOTH)
         glEnable(GL_DEPTH_TEST)
-        #glEnable(GL_CULL_FACE)
+        glEnable(GL_CULL_FACE)
         #glEnable(GL_VERTEX_ARRAY)
         #glEnable(GL_BLEND)
         #glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -270,6 +270,8 @@ class VirtualLedModel:
         glLoadIdentity()
         gluPerspective(self.fov, float(width)/float(height), self.close, self.far)
         glMatrixMode(GL_MODELVIEW)
+        
+        glutInitWindowSize(self.window_width, self.window_height)
 
     def _update_camera(self):
         zoom_distance_goal = pow(2.0, self.zoom_factor)*self.zoom_start_distance
