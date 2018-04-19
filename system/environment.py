@@ -30,6 +30,9 @@ General:
     Name of the script that reads neural data from the input source,
     and returns the LED colors for the model.
     The interpreters lie in neural_interpreter.
+[--colors] <color_low> <color_high>
+    The two colors to represent high and low intensity.
+    The program will create a color-gradient between these two for all values in between
 
 Source (last argument will override the rest):
 [--file] <location>
@@ -51,6 +54,7 @@ Presenter (last argument will override the rest):
 [--2d-plot]
     2D grid plot / heatmap.
     This overrides the model file.""")
+            
             exit(0)
         elif arg == "--refresh-rate":
             subarg = _get_float_subarg(i, args, "refresh rate")
@@ -84,6 +88,13 @@ Presenter (last argument will override the rest):
             subarg = _get_int_subarg(i, args, "port")
             i += 1
             settings.SERVER_PORT = subarg
+        elif arg == "--colors":
+            subarg1 = _get_subarg(i, args, "color_low")
+            i += 1
+            subarg2 = _get_subarg(i,args, "color_high")
+            i += 1
+            settings.PLOT_COLOR_FROM = subarg1
+            settings.PLOT_COLOR_TO = subarg2
         elif arg == "--no-input":
             settings.NEURAL_SOURCE = "none"
         elif arg == "--virtual":
