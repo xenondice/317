@@ -20,7 +20,7 @@ def main():
     _led_colors = bytearray([0] * (3 * settings.LEDS_TOTAL))
 
     if settings.NEURAL_PRESENTER == "virtual":
-        _presenter = VirtualLedModel(_led_colors, settings.LED_MODEL)
+        _presenter = VirtualLedModel(settings.LED_MODEL)
     elif settings.NEURAL_PRESENTER == "serial":
         _presenter = SerialInterface()
     elif settings.NEURAL_PRESENTER == "2d-plot":

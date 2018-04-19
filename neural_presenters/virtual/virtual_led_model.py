@@ -82,11 +82,11 @@ class VirtualLedModel:
     window_height = 600
     window_title = b'LED Visualizer'
 
-    def __init__(self, led_colors, model):
+    def __init__(self, model):
         self.model = model
         self.n_leds = len(self.model['led-strip'])
         self.last_time = time.time()
-        self.led_colors = led_colors # [0] * (self.n_leds * 3)
+        self.led_colors = [0] * (self.n_leds * 3)
 
         def thread_func():
             self._init_glut()
@@ -441,9 +441,9 @@ class VirtualLedModel:
         glUseProgram(0)
 
     def refresh(self, colors):
-        #for i in range(self.n_leds):
-        #    for j in range(3):
-        #        self.led_colors[i*3+j] = colors[i*3+j]
+        for i in range(self.n_leds):
+            for j in range(3):
+                self.led_colors[i*3+j] = colors[i*3+j]
         self.refresh_queued = True
 
     def running(self):
