@@ -5,7 +5,7 @@
 The project's goal is  to humanize NTNU's cyborg. This involves the following subgoals:
 - Designing an outer shell
 - Processing neural data
-- Visulizing neural data
+- Visualizing neural data
 
 
 
@@ -23,7 +23,7 @@ The project's goal is  to humanize NTNU's cyborg. This involves the following su
 Default: `file`
 ### Server
 ### File
-This data source will read neural data from a `.csv` file and output either a bucket of spikes or
+This data source will read neural data from a `.csv` file and output either an array where each
 **
 
 
