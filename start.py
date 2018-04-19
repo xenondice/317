@@ -5,7 +5,7 @@ import system.settings as settings
 import system.environment as environment
 from neural_presenters.virtual.virtual_led_model import VirtualLedModel
 from neural_presenters.serial.serial_communication import SerialInterface
-#from neural_sources.file.server_simulator import csv
+from neural_sources.file.file_server import FileServer
 #from neural_sources.server.client import program_websocket
 from neural_interpeters.random_mode import RandomMode
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
@@ -29,8 +29,7 @@ def main():
         raise RuntimeError("Invalid presenter!")
     
     if settings.NEURAL_SOURCE == "file":
-        _source = FileServer(settings.NEURAL_DATA_FILE, 1, 1)
-        raise NotImplementedError()
+        _source = FileServer()
     elif settings.NEURAL_SOURCE == "server":
         raise NotImplementedError()
     elif settings.NEURAL_SOURCE == "none":
@@ -66,9 +65,7 @@ def main():
             
             time.sleep(sleep_time)
     else:
-        pass
         _source.loop(loop, _presenter)
-        _source.start()
 
 if __name__ == "__main__":
     try:
