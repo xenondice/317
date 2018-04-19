@@ -54,7 +54,7 @@ Presenter (last argument will override the rest):
 [--2d-plot]
     2D grid plot / heatmap.
     This overrides the model file.""")
-            
+
             exit(0)
         elif arg == "--refresh-rate":
             subarg = _get_float_subarg(i, args, "refresh rate")

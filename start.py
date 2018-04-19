@@ -54,7 +54,7 @@ def main():
         _interpreter = Intensity()
     elif settings.NEURAL_INTERPRETER == "smiley":
         _interpreter = Smiley()
-    elif settings.NEURAL_INTERPRETER == "induvidual-moving-average":
+    elif settings.NEURAL_INTERPRETER == "individual-moving-average":
         _interpreter = IndividualMovingAverage()
     else:
         raise RuntimeError("Invalid interpreter!")

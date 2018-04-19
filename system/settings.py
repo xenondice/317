@@ -15,11 +15,11 @@ SERVER_TIMEOUT = 5
 NEURAL_ELECTRODES_TOTAL = 60
 NEURAL_PRESENTER = 'serial'
 NEURAL_SOURCE = 'file'
-NEURAL_INTERPRETER = 'individual-moving-average'
-NEURAL_DATA_TYPE = 'frequency'
+NEURAL_INTERPRETER = 'intensity'
+NEURAL_DATA_TYPE = 'intensity'
 
 # Visualization
-LED_REFRESHES_PER_SECOND = 60
+LED_REFRESHES_PER_SECOND = 10
 LED_MODEL_NAME = 'large_cube'
 
 # Spike detection threshold
@@ -28,4 +28,4 @@ THRESHOLD = -1*10**7
 ### Derived variables (initialized in environment.py) ###
 LEDS_TOTAL = None
 LED_MODEL = None
-NEURAL_DATA_FILE = None
+NEURAL_DATA_FILE = "neural_sources/file/data/2017-10-20_MEA2_100000rows_10sec.csv"
