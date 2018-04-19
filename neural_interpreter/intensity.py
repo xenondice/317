@@ -8,14 +8,14 @@ class Intensity:
             sys.exit('This interpreter is not available in this mode. Use --file <location> and --datatype intensity')
 
     def render(self, input_data, output_data):
-        max_value = input_data.max()
-        for j in range(len(volt)):
-            volt[j] -= max_value
-        volt = volt * -1
-        volt_per_group = volt.max() / 10
-        leds = np.zeros(60)
-        for j in range(len(volt)):
-            leds[j] = d2c.color_grouping(j, volt, volt_per_group)
+        max_value = input_data.min()
+        for j in range(len(input_data)):
+            input_data[j] -= max_value
+        volt_per_group = input_data.max() / 10
+        input_groups = [0] * settings.NEURAL_ELECTRODES_TOTAL
+        for j in range(len(input_data)):
+            input_groups[j] = d2c.color_grouping(j, input_data, volt_per_group)
+        d2c.data_to_bytearray(input_groups, output_data)
 
 if __name__ == '__main__':
     pass
