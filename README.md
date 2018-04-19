@@ -27,6 +27,11 @@ If you are using PyCharm, you have to do the following:
 - Add a new python configuration
 - Choose the script you are working on (add several configurations for the different files if needed) and the default interpeter
 
+Alternatively install the packages with pip
+```
+cd 317
+pip install -r requirements.txt
+```
 ## LED model visualizer
 ![alt_text](https://i.imgur.com/dXQbp2c.jpg)
 ### Controls

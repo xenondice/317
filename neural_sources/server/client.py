@@ -1,32 +1,44 @@
-def program_websocket(led_colors):
-    websocket.enableTrace(True)
+from system.settings import settings
+import sys
+import websocket
+import threading
+import json
 
-    def on_close(ws):
+class Client:
+    def __init__(self, loopfunction, errorfunction):
+        self.loopfunction = loopfunction
+        self.errorfunction = errorfunction
+        self.frequencies = [] * settings.NEURAL_ELECTRODES_TOTAL
+        websocket.enableTrace(True)
+        interval = int(1/settings.LED_REFRESHES_PER_SECOND * 1000 + 0.5)
+        request = "ws://" + settings.SERVER_IP + ":" + settings.SERVER_PORT + "/data/" + str(interval)
+        self.ws = websocket.WebSocketApp(request,
+                                         on_message=self._on_message,
+                                         on_error=self._on_error,
+                                         on_close=self._on_close,
+                                         on_open =self._on_open)
+        self.timer = threading.Timer(settings.SERVER_TIMEOUT + 1/settings.LED_REFRESHES_PER_SECOND,
+                                     self.timer_out())
+
+    def loop(self):
+        self.ws.run_forever()
+        print("test")
+
+    def _timer_out(self):
+        self.errorfunction("Connection timeout")
+
+    def _on_close(self):
         print("Connection closed")
-        exit()
 
-    def on_error(ws, error):
-        print("Connection error: {}".format(error))
-        exit()
+    def _on_error(self, error):
+        self.errorfunction("Connection error: {}".format(error))
 
-    def on_open(ws):
+    def _on_open(self):
         print("Connection established")
 
-    def on_message(ws, message):
-        leds = json.loads(message)
-        print(leds)
-        for i in range(len(leds)):
-            val = leds[i]
-            if val > 255:
-                val = 255
-            led_colors[i * 3] = val
-            led_colors[i * 3 + 1] = val
-            led_colors[i * 3 + 2] = val
-        update(led_colors)
-
-    ws = websocket.WebSocketApp("ws://127.0.0.1:6780/data/2000/",
-                                on_message=on_message,
-                                on_error=on_error,
-                                on_close=on_close)
-    ws.on_open = on_open
-    ws.run_forever()
+    def _on_message(self, message):
+        self.timer.cancel()
+        self.frequencies = json.loads(message)
+        self.loopfunction(self.frequencies)
+        self.timer = threading.Timer(settings.SERVER_TIMEOUT + 1 / settings.LED_REFRESHES_PER_SECOND,
+                                     self.timer_out())
