@@ -270,8 +270,6 @@ class VirtualLedModel:
         glLoadIdentity()
         gluPerspective(self.fov, float(width)/float(height), self.close, self.far)
         glMatrixMode(GL_MODELVIEW)
-        
-        glutInitWindowSize(self.window_width, self.window_height)
 
     def _update_camera(self):
         zoom_distance_goal = pow(2.0, self.zoom_factor)*self.zoom_start_distance
