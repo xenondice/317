@@ -9,7 +9,7 @@ class Client:
         self.presenter = presenter
         self.frequencies = [] * settings.NEURAL_ELECTRODES_TOTAL
         websocket.enableTrace(True)
-        interval = int(1/settings.LED_REFRESHES_PER_SECOND * 1000 + 0.5)
+        interval = int(1000/settings.LED_REFRESHES_PER_SECOND)
         request = "ws://" + settings.SERVER_IP + ":" + settings.SERVER_PORT + "/data/" + str(interval)
         self.ws = websocket.WebSocketApp(request,
                                          on_message=self._on_message,

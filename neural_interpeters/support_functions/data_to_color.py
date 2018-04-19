@@ -24,13 +24,13 @@ def color_grouping(index, values, value_per_group):
         return 9
 
 
-def generate_color_gradient(settings):
-    color1 = Color(settings.get_color_from())
-    return list(color1.range_to(Color(settings.get_color_to()), 10))
+def generate_color_gradient():
+    color1 = Color(settings.PLOT_COLOR_FROM)
+    return list(color1.range_to(Color(settings.PLOT_COLOR_TO), 10))
 
 
-def data_to_hex(data, settings):
-    colors = generate_color_gradient(settings)
+def data_to_hex(data):
+    colors = generate_color_gradient()
     hex_data = [0] * 60
     for i in range(len(data)):
         hex_data[i] = colors[int(data[i])].get_hex_l()
@@ -38,9 +38,9 @@ def data_to_hex(data, settings):
 
 
 def data_to_bytearray(input_data, output_data):
-    hex_array = data_to_hex(input_data, settings)
+    hex_array = data_to_hex(input_data)
     num_leds = settings.LEDS_TOTAL
-    num_leds_cluster = num_leds / 60
+    num_leds_cluster = int(num_leds / 60)
     byte_arr = bytearray([0, 0, 0] * num_leds)
     for i in range(len(hex_array)):
         for j in range(num_leds_cluster):

@@ -1,5 +1,5 @@
 import statistics
-import data_to_color as d2c
+import neural_interpeters.support_functions.data_to_color as d2c
 
 # Takes in array of size 60 with frequencies
 class MovingAverages:
@@ -13,8 +13,6 @@ class MovingAverages:
         median = statistics.median(sorted(input_data))
         max_frequency = max(input_data)
         min_frequency = min(input_data)
-        if max_frequency >= 4*median:   #Done to avoid very dominant nodes maybe implement better solution
-            max_frequency = 2*median    #TODO better?
         if not self.initialized:
             self.high = max_frequency
             self.low = min_frequency
