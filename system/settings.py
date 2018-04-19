@@ -13,9 +13,9 @@ SERVER_TIMEOUT = 5
 
 # Data flow
 NEURAL_ELECTRODES_TOTAL = 60
-NEURAL_PRESENTER = 'virtual'
-NEURAL_SOURCE = 'server'
-NEURAL_INTERPRETER = 'random'
+NEURAL_PRESENTER = 'serial'
+NEURAL_SOURCE = 'file'
+NEURAL_INTERPRETER = 'individual-moving-average'
 NEURAL_DATA_TYPE = 'frequency'
 
 # Visualization

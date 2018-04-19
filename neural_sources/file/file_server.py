@@ -32,10 +32,11 @@ class FileServer:
 
     def loop(self):
         frame_time = 1.0 / settings.LED_REFRESHES_PER_SECOND
+        n_rows = int(10000 * frame_time)
+        print(n_rows)
         while self.presenter.running():
             past_time = time.time()
             if settings.NEURAL_DATA_TYPE == 'frequency':
-                n_rows = int(10000 * frame_time)
                 spike, _ = self.read_CSV(n_rows)
                 processed_data = [0] * settings.NEURAL_ELECTRODES_TOTAL
                 for i in range(len(spike)):
