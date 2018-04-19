@@ -1,5 +1,7 @@
 import sys
+
 import system.settings as settings
+
 
 class Smiley:
     def __init__(self):

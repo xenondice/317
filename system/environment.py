@@ -21,15 +21,15 @@ General:
 [--refresh-rate] <times per second>
     How often the LED model should refresh its image.
     The data between each refresh is added together.
-[--datatype] [voltage | frequency]
-    The type of data gathered from the neurons and passed to the interpeter.
+[--datatype] [intensity | frequency]
+    The type of data gathered from the neurons and passed to the interpreter.
 [--led-model] <name>
     Name of the model file to use.
     It has to exist as a .json file in led_models.
-[--interpeter] <name>
+[--interpreter] <name>
     Name of the script that reads neural data from the input source,
     and returns the LED colors for the model.
-    The interpters lie in neural_interpeters.
+    The interpreters lie in neural_interpreter.
 
 Source (last argument will override the rest):
 [--file] <location>
@@ -41,7 +41,7 @@ Source (last argument will override the rest):
 [--port] <port>
     Override default server port 6780.
 [--no-input]
-    Pass no neural data into the interpeter.
+    Pass no neural data into the interpreter.
 
 Presenter (last argument will override the rest):
 [--virtual]
@@ -59,17 +59,17 @@ Presenter (last argument will override the rest):
         elif arg == "--datatype":
             subarg = _get_subarg(i, args, "datatype")
             i += 1
-            if subarg != "voltage" and subarg != "frequency":
+            if subarg != "intensity" and subarg != "frequency":
                 raise SyntaxError("Invalid datatype!")
-            settings.NERUAL_DATA_TYPE = subarg
+            settings.NEURAL_DATA_TYPE = subarg
         elif arg == "--led-model":
             subarg = _get_subarg(i, args, "led model").lower()
             i += 1
             settings.LED_MODEL_NAME = subarg
-        elif arg == "--interpeter":
-            subarg = _get_subarg(i, args, "interpeter").lower()
+        elif arg == "--interpreter":
+            subarg = _get_subarg(i, args, "interpreter").lower()
             i += 1
-            settings.NEURAL_INTERPETER = subarg
+            settings.NEURAL_INTERPRETER = subarg
         elif arg == "--file":
             subarg = _get_subarg(i, args, "file")
             i += 1

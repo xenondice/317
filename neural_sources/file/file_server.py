@@ -34,7 +34,7 @@ class FileServer:
         frame_time = 1.0 / settings.LED_REFRESHES_PER_SECOND
         while self.presenter.running():
             past_time = time.time()
-            if settings.NERUAL_DATA_TYPE == 'frequency':
+            if settings.NEURAL_DATA_TYPE == 'frequency':
                 N_ROWS = int(10000 * frame_time)
                 spike, _ = self.read_CSV(N_ROWS)
                 processed_data = [0] * settings.NEURAL_ELECTRODES_TOTAL
@@ -42,7 +42,7 @@ class FileServer:
                     for j in range(len(spike[i])):
                         if spike[i][j]:
                             processed_data[j] += 1
-            elif settings.NERUAL_DATA_TYPE == 'voltage':
+            elif settings.NEURAL_DATA_TYPE == 'intensity':
                 N_ROWS = 1
                 _, processed_data = self.read_CSV(N_ROWS)
                 processed_data = processed_data[0]
