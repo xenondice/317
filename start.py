@@ -11,7 +11,7 @@ from neural_interpreter.random_mode import RandomMode
 from neural_interpreter.moving_average import MovingAverage
 from neural_interpreter.intensity import Intensity
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
-from neural_interpeters.smiley import Smiley
+from neural_interpreter.smiley import Smiley
 
 _presenter = None
 _source = None
