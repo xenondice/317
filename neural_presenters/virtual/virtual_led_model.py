@@ -440,10 +440,10 @@ class VirtualLedModel:
 
         glUseProgram(0)
 
-    def refresh(self, colors):
+    def refresh(self, led_color_array):
         for i in range(self.n_leds):
             for j in range(3):
-                self.led_colors[i*3+j] = colors[i*3+j]
+                self.led_colors[i*3+j] = led_color_array[i*3+j]
         self.refresh_queued = True
 
     def running(self):

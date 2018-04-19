@@ -16,9 +16,9 @@ class TwoDPlot:
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
 
-    def refresh(self, byte_array):
+    def refresh(self, led_color_array):
         self.ax.clear()
-        hex_array = self.byte_to_hex(byte_array)
+        hex_array = self.byte_to_hex(led_color_array)
         x_pos = 0.6
         y_pos = 0.6
         x_size = 0.8

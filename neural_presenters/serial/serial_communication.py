@@ -21,8 +21,8 @@ class SerialInterface:
             else:
                 return None
 
-    def refresh(self, data):
-        self.ser.write(data)
+    def refresh(self, led_color_array):
+        self.ser.write(led_color_array)
 
     # Included for completeness, not actually used in our program
     def read(self, num_bytes):
