@@ -5,7 +5,7 @@ from collections import deque
 
 class IndividualMovingAverage:
     def __init__(self):
-        self.history  = [deque(maxlen = 20) for j in range(60)]
+        self.history  = [deque(maxlen=20) for j in range(60)]
         self.intensities = [0]*60
         self.initialized = False
 
@@ -21,9 +21,9 @@ class IndividualMovingAverage:
         for i in range(len(input_data)):
             average = np.average(self.history[i])
             std = np.std(self.history[i])
-            if std==0:
+            if std == 0:
                 std = 1
-            intensity = int((input_data[i] - (average - 2 * std) / (4 * std) * 10))
+            intensity = int((input_data[i] - (average - 2 * std)) / (4 * std) * 10)
             intensity = max(0, intensity)
             intensity = min(9, intensity)
             self.intensities[i] = intensity

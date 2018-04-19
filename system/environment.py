@@ -94,6 +94,8 @@ Presenter (last argument will override the rest):
             settings.NEURAL_PRESENTER = "2d-plot"
             settings.LEDS_TOTAL = settings.NEURAL_ELECTRODES_TOTAL
             settings.LED_MODEL_NAME = "none"
+        else:
+            print("Unknown argument \"{}\"".format(arg))
     
     # Setup led model
     if settings.NEURAL_PRESENTER != "2d-plot":
