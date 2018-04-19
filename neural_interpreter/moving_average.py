@@ -1,5 +1,5 @@
 import statistics
-import neural_interpeters.support_functions.data_to_color as d2c
+import neural_interpreter.support_functions.data_to_color as d2c
 from collections import deque
 import system.settings as settings
 

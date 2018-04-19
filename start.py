@@ -7,18 +7,19 @@ from neural_presenters.virtual.virtual_led_model import VirtualLedModel
 from neural_presenters.serial.serial_communication import SerialInterface
 from neural_sources.file.file_server import FileServer
 from neural_sources.server.client import Client
-from neural_interpeters.random_mode import RandomMode
-from neural_interpeters.moving_average import MovingAverage
+from neural_interpreter.random_mode import RandomMode
+from neural_interpreter.moving_average import MovingAverage
+from neural_interpreter.intensity import Intensity
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 from neural_interpeters.smiley import Smiley
 
 _presenter = None
 _source = None
-_interpeter = None
+_interpreter = None
 _led_colors = None
 
 def main():
-    global _led_colors, _presenter, _source, _interpeter
+    global _led_colors, _presenter, _source, _interpreter
     _led_colors = bytearray([0] * (3 * settings.LEDS_TOTAL))
 
     if settings.NEURAL_PRESENTER == "virtual":
@@ -31,8 +32,8 @@ def main():
         raise RuntimeError("Invalid presenter!")
 
     def loop(data):
-        global _interpeter, _presenter, _led_colors
-        _interpeter.render(data, _led_colors)
+        global _interpreter, _presenter, _led_colors
+        _interpreter.render(data, _led_colors)
         _presenter.refresh(_led_colors)
 
     if settings.NEURAL_SOURCE == "file":
@@ -44,14 +45,16 @@ def main():
     else:
         raise RuntimeError("Invalid source!")
     
-    if settings.NEURAL_INTERPETER == "random":
-        _interpeter = RandomMode()
-    elif settings.NEURAL_INTERPETER == "moving-average":
-        _interpeter = MovingAverage()
-    elif settings.NEURAL_INTERPETER == "smiley":
-        _interpeter = Smiley()
+    if settings.NEURAL_INTERPRETER == "random":
+        _interpreter = RandomMode()
+    elif settings.NEURAL_INTERPRETER == "moving-average":
+        _interpreter = MovingAverage()
+    elif settings.NEURAL_INTERPRETER == 'intensity':
+        _interpreter = Intensity()
+    elif settings.NEURAL_INTERPRETER == "smiley":
+        _interpreter = Smiley()
     else:
-        raise RuntimeError("Invalid interpeter!")
+        raise RuntimeError("Invalid interpreter!")
 
 
     if _source is None:

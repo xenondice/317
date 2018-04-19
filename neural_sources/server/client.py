@@ -1,5 +1,5 @@
 import system.settings as settings
-import websocket
+#import websocket
 import threading
 import json
 

@@ -1,7 +1,9 @@
 import sys
+
 import system.settings as settings
 from colour import Color
 from math import pi
+
 
 class Smiley:
     def __init__(self):
