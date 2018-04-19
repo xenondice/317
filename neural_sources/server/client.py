@@ -13,10 +13,10 @@ class Client:
         interval = int(1/settings.LED_REFRESHES_PER_SECOND * 1000 + 0.5)
         request = "ws://" + settings.SERVER_IP + ":" + settings.SERVER_PORT + "/data/" + str(interval)
         self.ws = websocket.WebSocketApp(request,
-                                         on_message= self._on_message,
-                                         on_error= self._on_error,
-                                         on_close= self._on_close,
-                                         on_open = self._on_open)
+                                         on_message=self._on_message,
+                                         on_error=self._on_error,
+                                         on_close=self._on_close,
+                                         on_open =self._on_open)
         self.timer = threading.Timer(settings.SERVER_TIMEOUT + 1/settings.LED_REFRESHES_PER_SECOND,
                                      self.timer_out())
 
@@ -28,7 +28,7 @@ class Client:
         self.errorfunction("Connection timeout")
 
     def _on_close(self):
-        sys.exit("Connection closed")
+        print("Connection closed")
 
     def _on_error(self, error):
         self.errorfunction("Connection error: {}".format(error))
