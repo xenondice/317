@@ -12,6 +12,7 @@ from neural_interpreter.moving_average import MovingAverage
 from neural_interpreter.intensity import Intensity
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 from neural_interpreter.smiley import Smiley
+from neural_interpreter.individual_moving_average import IndividualMovingAverage
 
 _presenter = None
 _source = None
@@ -53,6 +54,8 @@ def main():
         _interpreter = Intensity()
     elif settings.NEURAL_INTERPRETER == "smiley":
         _interpreter = Smiley()
+    elif settings.NEURAL_INTERPRETER == "induvidual-moving-average":
+        _interpreter = IndividualMovingAverage()
     else:
         raise RuntimeError("Invalid interpreter!")
 

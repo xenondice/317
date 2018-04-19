@@ -6,7 +6,7 @@
         {
             "label": "start",
             "type": "shell",
-            "command": "${config:python.pythonPath} start.py --server '127.0.0.1' --interpreter moving-average --refresh-rate 15 --virtual", //--file 'neural_sources/file/data/2017-10-20_MEA2_100000rows_10sec.csv'",
+            "command": "${config:python.pythonPath} start.py --server '127.0.0.1' --interpreter induvidual-moving-average --refresh-rate 15 --virtual", //--file 'neural_sources/file/data/2017-10-20_MEA2_100000rows_10sec.csv'",
             "group": {
                 "kind": "build",
                 "isDefault": true
