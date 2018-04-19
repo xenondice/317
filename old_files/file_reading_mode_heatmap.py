@@ -179,6 +179,8 @@ def readCSV(fileName, N_ROWS, skip_rows=6):
 
 
 def spikeDetection(data):
+    print(data.shape)
+    print(data[0][0])
     n_colums = data.shape[0]
     spikes = [False] * n_colums
     values = np.zeros(n_colums)

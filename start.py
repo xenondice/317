@@ -17,7 +17,7 @@ _led_colors = None
 
 def main():
     global _led_colors, _presenter, _source, _interpeter
-    _led_colors = bytearray([0] * (3*settings.LEDS_TOTAL))
+    _led_colors = bytearray([0] * (3 * settings.LEDS_TOTAL))
 
     if settings.NEURAL_PRESENTER == "virtual":
         _presenter = VirtualLedModel(_led_colors, settings.LED_MODEL)
@@ -27,9 +27,17 @@ def main():
         _presenter = TwoDPlot()
     else:
         raise RuntimeError("Invalid presenter!")
-    
+
+    def loop(data):
+        global _interpeter, _presenter, _led_colors
+        _interpeter.render(data, _led_colors)
+        _presenter.refresh(_led_colors)
+
+    def error(message):
+        print(message)
+
     if settings.NEURAL_SOURCE == "file":
-        _source = FileServer()
+        _source = FileServer(loop, error, _presenter)
     elif settings.NEURAL_SOURCE == "server":
         raise NotImplementedError()
     elif settings.NEURAL_SOURCE == "none":
@@ -42,10 +50,6 @@ def main():
     else:
         raise RuntimeError("Invalid interpeter!")
 
-    def loop(data):
-        global _interpeter, _presenter, _led_colors
-        _interpeter.render(data, _led_colors)
-        _presenter.refresh(_led_colors)
 
     if _source is None:
         frame_time = 1.0/settings.LED_REFRESHES_PER_SECOND
@@ -65,7 +69,7 @@ def main():
             
             time.sleep(sleep_time)
     else:
-        _source.loop(loop, _presenter)
+        _source.loop()
 
 if __name__ == "__main__":
     try:

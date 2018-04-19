@@ -153,13 +153,13 @@ if __name__ == "__main__":
 
     setup()
 
-    led_colors = bytearray([0] * (3*MODEL['led-quantity']))
+    _led_colors = bytearray([0] * (3 * MODEL['led-quantity']))
 
     while running():
         if PROGRAM == 'snake':
-            program_snake(led_colors)
+            program_snake(_led_colors)
         elif PROGRAM == 'smily':
-            program_smily(led_colors)
+            program_smily(_led_colors)
         elif PROGRAM == 'websocket':
-            program_websocket(led_colors)
+            program_websocket(_led_colors)
             break
