@@ -29,7 +29,7 @@ def main():
         raise RuntimeError("Invalid presenter!")
     
     if settings.NEURAL_SOURCE == "file":
-        #_source = csv(settings.NEURAL_DATA_FILE, 1, 1)
+        _source = FileServer(settings.NEURAL_DATA_FILE, 1, 1)
         raise NotImplementedError()
     elif settings.NEURAL_SOURCE == "server":
         raise NotImplementedError()
@@ -67,8 +67,8 @@ def main():
             time.sleep(sleep_time)
     else:
         pass
-        #_source.loop_function = loop
-        #_source.start()
+        _source.loop(loop, _presenter)
+        _source.start()
 
 if __name__ == "__main__":
     try:
