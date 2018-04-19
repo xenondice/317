@@ -2,7 +2,7 @@ import statistics
 import neural_interpeters.support_functions.data_to_color as d2c
 
 # Takes in array of size 60 with frequencies
-class MovingAverages:
+class MovingAverage:
     def __init__(self):
         self.high = 0
         self.low = 0

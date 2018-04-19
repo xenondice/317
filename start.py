@@ -8,7 +8,7 @@ from neural_presenters.serial.serial_communication import SerialInterface
 from neural_sources.file.file_server import FileServer
 from neural_sources.server.client import Client
 from neural_interpeters.random_mode import RandomMode
-from neural_interpeters.moving_averages import MovingAverages
+from neural_interpeters.moving_average import MovingAverage
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 
 _presenter = None
@@ -45,8 +45,8 @@ def main():
     
     if settings.NEURAL_INTERPETER == "random":
         _interpeter = RandomMode()
-    elif settings.NEURAL_INTERPETER == "moving-averages":
-        _interpeter = MovingAverages()
+    elif settings.NEURAL_INTERPETER == "moving-average":
+        _interpeter = MovingAverage()
     else:
         raise RuntimeError("Invalid interpeter!")
 
