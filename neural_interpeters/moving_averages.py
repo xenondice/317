@@ -2,7 +2,7 @@ import statistics
 import data_to_color as d2c
 
 # Takes in array of size 60 with frequencies
-class FrequencyPlot:
+class MovingAverages:
     def __init__(self):
         self.high = 0
         self.low = 0
