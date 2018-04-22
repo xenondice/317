@@ -5,7 +5,7 @@ from collections import deque
 
 class IndividualMovingAverage:
     def __init__(self):
-        self.history  = [deque(maxlen=20) for j in range(60)]
+        self.history  = [deque(maxlen=40) for j in range(60)]
         self.intensities = [0]*60
         self.initialized = False
 

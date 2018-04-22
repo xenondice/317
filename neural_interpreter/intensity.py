@@ -1,6 +1,7 @@
 import system.settings as settings
 import sys
 import neural_interpreter.support_functions.data_to_color as d2c
+import numpy as np
 
 class Intensity:
     def __init__(self):
@@ -8,6 +9,7 @@ class Intensity:
             sys.exit('This interpreter is not available in this mode. Use --file <location> and --datatype intensity')
 
     def render(self, input_data, output_data):
+        input_data = np.array(input_data)
         max_value = input_data.min()
         for j in range(len(input_data)):
             input_data[j] -= max_value
