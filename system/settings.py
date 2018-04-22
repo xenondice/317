@@ -3,7 +3,7 @@
 SERIAL_BAUD_RATE = 115200
 
 # 2D plot
-PLOT_COLOR_FROM = 'green'
+PLOT_COLOR_FROM = 'blue'
 PLOT_COLOR_TO = 'red'
 
 # Server
