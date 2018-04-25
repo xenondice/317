@@ -14,6 +14,7 @@ from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 from neural_interpreter.smiley import Smiley
 from neural_interpreter.individual_moving_average import IndividualMovingAverage
 from neural_interpreter.snake import Snake
+from neural_interpreter.support_functions.data_to_color import create_electrode_mapping
 
 _presenter = None
 _source = None
@@ -32,6 +33,9 @@ def main():
         _presenter = TwoDPlot()
     else:
         raise RuntimeError("Invalid presenter!")
+
+    if settings.LED_ELECTRODE_SHUFFLE:
+        create_electrode_mapping(_presenter)
 
     def loop(data):
         global _interpreter, _presenter, _led_colors
