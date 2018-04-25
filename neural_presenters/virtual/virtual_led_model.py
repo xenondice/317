@@ -204,7 +204,7 @@ class VirtualLedModel:
         self.attrib_led_position_id = glGetUniformLocation(self.program, 'led_positions')
         glBindBufferBase(GL_UNIFORM_BUFFER, 1, self.led_position_buffer_id)
         glUniformBlockBinding(self.program, self.attrib_led_position_id, 1)
-        
+
         glBindBuffer(GL_UNIFORM_BUFFER, 0)
         """
 
@@ -438,7 +438,7 @@ class VirtualLedModel:
         time_taken = time.time() - now_time
         sync_time = 1./self.fps - time_taken
         if sync_time < 0:
-            print('Virtual model can\'t keep up')
+            #print('Virtual model can\'t keep up')
             sync_time = 0
         time.sleep(sync_time)
 

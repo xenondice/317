@@ -21,7 +21,7 @@ NEURAL_DATA_TYPE = 'frequency'
 # Visualization
 LED_REFRESHES_PER_SECOND = 10
 LED_MODEL_NAME = 'large_cube'
-LED_ELECTRODE_SHUFFLE = True
+LED_ELECTRODE_SHUFFLE = False
 
 # Spike detection threshold
 THRESHOLD = -1*10**7
