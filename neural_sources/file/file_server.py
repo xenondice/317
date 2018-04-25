@@ -36,12 +36,20 @@ class FileServer:
         while self.presenter.running():
             past_time = time.time()
             if settings.NEURAL_DATA_TYPE == 'frequency':
+                '''
+                The code below will read n_rows to do spike detection and will give out
+                the frequency of spikes in a time interval. This runs way too slow so we wont use it
+
                 spike, _ = self.read_CSV(n_rows)
                 processed_data = [0] * settings.NEURAL_ELECTRODES_TOTAL
                 for i in range(len(spike)):
                     for j in range(len(spike[i])):
                         if spike[i][j]:
                             processed_data[j] += 1
+                '''
+                n_rows = 1
+                _, processed_data = self.read_CSV(n_rows)
+                processed_data = processed_data[0] * -1
             elif settings.NEURAL_DATA_TYPE == 'intensity':
                 n_rows = 1
                 _, processed_data = self.read_CSV(n_rows)

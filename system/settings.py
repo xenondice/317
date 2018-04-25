@@ -15,8 +15,8 @@ SERVER_TIMEOUT = 5
 NEURAL_ELECTRODES_TOTAL = 60
 NEURAL_PRESENTER = 'serial'
 NEURAL_SOURCE = 'file'
-NEURAL_INTERPRETER = 'individual_moving_average'
-NEURAL_DATA_TYPE = 'intensity'
+NEURAL_INTERPRETER = 'individual-moving-average'
+NEURAL_DATA_TYPE = 'frequency'
 
 # Visualization
 LED_REFRESHES_PER_SECOND = 10
