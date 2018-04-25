@@ -14,6 +14,7 @@ from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 from neural_interpreter.smiley import Smiley
 from neural_interpreter.individual_moving_average import IndividualMovingAverage
 from neural_interpreter.snake import Snake
+from neural_interpreter.snake_white import SnakeWhite
 from neural_interpreter.support_functions.data_to_color import create_electrode_mapping
 
 _presenter = None
@@ -63,6 +64,8 @@ def main():
         _interpreter = IndividualMovingAverage()
     elif settings.NEURAL_INTERPRETER == "snake":
         _interpreter = Snake()
+    elif settings.NEURAL_INTERPRETER == "snake-white":
+        _interpreter = SnakeWhite()
     else:
         raise RuntimeError("Invalid interpreter!")
 
