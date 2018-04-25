@@ -382,11 +382,6 @@ class VirtualLedModel:
         self.delta_time = now_time - self.last_time
         self.last_time = now_time
 
-        sync_time = 1./self.fps - self.delta_time
-        if sync_time < 0:
-            sync_time = 0
-        time.sleep(sync_time)
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         glLoadIdentity()
@@ -439,6 +434,13 @@ class VirtualLedModel:
         glutSwapBuffers()
 
         glUseProgram(0)
+
+        time_taken = time.time() - now_time
+        sync_time = 1./self.fps - time_taken
+        if sync_time < 0:
+            print('Virtual model can\'t keep up')
+            sync_time = 0
+        time.sleep(sync_time)
 
     def refresh(self, led_color_array):
         for i in range(self.n_leds):
