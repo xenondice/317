@@ -17,11 +17,10 @@ class FileServer:
         n_rows, n_columns = data.shape
         spikes = np.zeros((n_rows, n_columns))
         volt = np.zeros((n_rows, n_columns))
-        threshold = -1 * 10 ** 7
         for i in range(n_rows):
             for j in range(n_columns):
                 volt[i][j] = data.iloc[i][j]
-                if volt[i][j] <= threshold:
+                if volt[i][j] <= settings.THRESHOLD:
                     spikes[i][j] = 1
         return spikes, volt
 
@@ -32,16 +31,25 @@ class FileServer:
 
     def loop(self):
         frame_time = 1.0 / settings.LED_REFRESHES_PER_SECOND
+        n_rows = int(10000 * frame_time)
+        print(n_rows)
         while self.presenter.running():
             past_time = time.time()
             if settings.NEURAL_DATA_TYPE == 'frequency':
-                n_rows = int(10000 * frame_time)
+                '''
+                The code below will read n_rows to do spike detection and will give out
+                the frequency of spikes in a time interval. This runs way too slow so we wont use it
+
                 spike, _ = self.read_CSV(n_rows)
                 processed_data = [0] * settings.NEURAL_ELECTRODES_TOTAL
                 for i in range(len(spike)):
                     for j in range(len(spike[i])):
                         if spike[i][j]:
                             processed_data[j] += 1
+                '''
+                n_rows = 1
+                _, processed_data = self.read_CSV(n_rows)
+                processed_data = processed_data[0] * -1
             elif settings.NEURAL_DATA_TYPE == 'intensity':
                 n_rows = 1
                 _, processed_data = self.read_CSV(n_rows)

@@ -13,6 +13,7 @@ from neural_interpreter.intensity import Intensity
 from neural_presenters.two_d_plot.two_d_plot import TwoDPlot
 from neural_interpreter.smiley import Smiley
 from neural_interpreter.individual_moving_average import IndividualMovingAverage
+from neural_interpreter.snake import Snake
 
 _presenter = None
 _source = None
@@ -45,7 +46,7 @@ def main():
         _source = None
     else:
         raise RuntimeError("Invalid source!")
-    
+
     if settings.NEURAL_INTERPRETER == "random":
         _interpreter = RandomMode()
     elif settings.NEURAL_INTERPRETER == "moving-average":
@@ -54,8 +55,10 @@ def main():
         _interpreter = Intensity()
     elif settings.NEURAL_INTERPRETER == "smiley":
         _interpreter = Smiley()
-    elif settings.NEURAL_INTERPRETER == "induvidual-moving-average":
+    elif settings.NEURAL_INTERPRETER == "individual-moving-average":
         _interpreter = IndividualMovingAverage()
+    elif settings.NEURAL_INTERPRETER == "snake":
+        _interpreter = Snake()
     else:
         raise RuntimeError("Invalid interpreter!")
 
@@ -65,7 +68,7 @@ def main():
         neuron_data = [0] * settings.NEURAL_ELECTRODES_TOTAL
         while _presenter.running():
             past_time = time.time()
-            
+
             for i in range(len(neuron_data)):
                 neuron_data[i] = 0
             loop(neuron_data)
@@ -75,7 +78,7 @@ def main():
             if sleep_time < 0:
                 print("Can't keep up!")
                 sleep_time = 0
-            
+
             time.sleep(sleep_time)
     else:
         _source.loop()
