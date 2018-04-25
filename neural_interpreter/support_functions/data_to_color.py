@@ -39,13 +39,23 @@ def create_electrode_mapping(presenter):
     
     _led_mapping = [None] * n_elct
     led_pos = [None] * n_elct
-    #last_index = [0,0]
+    last_index = [0,0]
+    step = int(sqrt(settings.NEURAL_ELECTRODES_TOTAL*len(mapping)*len(mapping[0])))
     for i in range(n_elct):
-        x = randint(0,49)
-        y = randint(0,4)
-        while mapping[y][x] == -1:
+        x = last_index[0]
+        y = last_index[1]
+        last_index[1] += step
+        if last_index[1] >= 5:
+            last_index[1] = 0
+            last_index[0] += step
+        
+        if x >= 50 or mapping[y][x] == -1:
             x = randint(0,49)
             y = randint(0,4)
+            while mapping[y][x] == -1:
+                x = randint(0,49)
+                y = randint(0,4)
+
         _led_mapping[i] = [mapping[y][x]]
         led_pos[i] = [[x,y]]
         mapping[y][x] = -1
@@ -54,6 +64,8 @@ def create_electrode_mapping(presenter):
 
     check_pattern = [[-1,0],[1,0],[0,-1],[0,1]]
     while True:
+        temp = check_pattern.pop(0)
+        check_pattern.append(temp)
         change = False
         for i in range(n_elct):
             done = False
@@ -61,7 +73,7 @@ def create_electrode_mapping(presenter):
             x = -1
             y = -1
             for j in range(len(_led_mapping[i])):
-                shuffle(check_pattern)
+                #shuffle(check_pattern)
                 for move in check_pattern:
                     x = led_pos[i][j][0] + move[0]
                     y = led_pos[i][j][1] + move[1]
