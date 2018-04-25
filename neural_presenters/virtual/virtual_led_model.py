@@ -450,7 +450,8 @@ class VirtualLedModel:
         return self.visualizer_thread.is_alive()
 
     def _keyboard_used(self, key, x, y):
-        if key is b'd':
+        print(key)
+        if key == b'd':
             self.debug = not self.debug
 
     def _bind_uniforms(self):
