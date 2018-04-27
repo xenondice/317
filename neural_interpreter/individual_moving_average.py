@@ -12,7 +12,7 @@ class IndividualMovingAverage:
     def render(self, input_data, output_data):
         if not self.initialized:
             for i in range(len(input_data)):
-                for j in range(20):
+                for j in range(40):
                     self.history[i].append(input_data[i])
             self.initialized = True
         else:
