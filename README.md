@@ -33,7 +33,7 @@ conda install -c conda-forge websocket-client
 Clone the project and open up a terminal (with python 3) and type:
 ```
 cd 317
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## Pycharm and Anaconda
@@ -66,14 +66,14 @@ On Windows, the freeglut.dll needed for OpenGL is included and everything should
 
 If you are using linux and want to use the virtual model, you will have to execute the following command after installing the project as described above:
 ```
-apt-get install freeglut3-dev
+sudo apt-get install freeglut3-dev
 ```
 The virtual model is, for the time being, not supported on Mac OS.
 
 # Running the project
 Open up a terminal with python 3, navigate to the project folder and type `python start.py --help` to get a list over the available arguments. Just running the start.py file will start the project with its default arguments, equivalent of executing the command:
 ```
-python start.py --refresh-rate 10 --datatype frequency --led-model large_cube --interpreter induvidual-moving-average --colors blue red --file neural_sources/file/data/2017-10-20_MEA2_100000rows_10sec.csv --serial
+python start.py --refresh-rate 10 --datatype frequency --led-model large_cube --interpreter individual-moving-average --colors blue red --file neural_sources/file/data/2017-10-20_MEA2_100000rows_10sec.csv --serial
 ```
 
 # Project structure
@@ -119,13 +119,13 @@ There are currently 7 interpreters. A interpreter can be selected by adding the 
 ```
 induvidual-moving-average
 ```
-Stores all the neural data for the past n cycles. Then calculates the standard diviation and average for each neural node and sets the low cap to `average - diviation` and high to `average + diviation`. This causes the program to display any neural activity for each node relative to itself without the need for manual adjustment. This program was made since the neural data nodes tends to have an unevenly distributed amount of activity, so a global high and low will result in some nodes constantly being off or on. High and low color can be changed using `--colors` (default: `blue` and `red`).
+Stores all the neural data for the past n cycles. Then calculates the standard deviation and average for each neural node and sets the low cap to `average - 2*deviation` and high to `average + 2*deviation`. This causes the program to display any neural activity for each node relative to itself without the need for manual adjustment. This program was made since the neural data nodes tends to have an unevenly distributed amount of activity, so a global high and low will result in some nodes constantly being off or on. High and low color can be changed using `--colors` (default: `blue` and `red`).
 
 ### Moving average
 ```
 moving-average
 ```
-Calculates the standard diviation and the average for each cycle and stores them. It then takes the average of the last n values and sets the low cap to `average - diviation` and high to `average + diviation`. This causes the LED colors to represent the dynamic area of the neural data. No manual adjustment required. High and low color can be changed using `--colors` (default: `blue` and `red`).
+Calculates the standard deviation and the average for each cycle and stores them. It then takes the average of the last n values and sets the low cap to `average - deviation` and high to `average + deviation`. This causes the LED colors to represent the dynamic area of the neural data. No manual adjustment required. High and low color can be changed using `--colors` (default: `blue` and `red`).
 
 ### Intensity
 ```
@@ -166,7 +166,7 @@ There are currently three presenters. `--serial`, `--2d-plot` and `--virtual`. T
 
 ### Serial
 ![alt_text](https://i.imgur.com/SUMn21W.jpg)
-Responsable for convaying the LED data to a physical model connected over USB. Will crash if it can't find the Arduino controlling the lights. The folder arduino_files containes the code on the arduino running the lights on the large_cube model.
+Responsable for convaying the LED data to a physical model connected over USB. Will exit if it can't find the Arduino controlling the lights. The folder arduino_files containes the code on the arduino running the lights on the large_cube model.
 
 ### 2D plot
 ![alt_text](https://i.imgur.com/fXxC1Tp.png)
