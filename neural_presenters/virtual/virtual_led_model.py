@@ -460,7 +460,6 @@ class VirtualLedModel:
         self.shutdown_requested = True
 
     def _keyboard_used(self, key, x, y):
-        print(key)
         if key == b'd':
             self.debug = not self.debug
 
