@@ -2,7 +2,7 @@ import serial
 import sys
 import time
 import serial.tools.list_ports
-from system.settings import SERIAL_BAUD_RATE
+from system.settings import SERIAL_BAUD_RATE, LEDS_TOTAL
 
 class SerialInterface:
     def __init__(self):
@@ -30,6 +30,9 @@ class SerialInterface:
 
     def running(self):
         return True
+    
+    def shutdown(self):
+        self.ser.write(bytearray([0] * (3*LEDS_TOTAL)))
 
 
 # This is just a testing function setting all leds to red

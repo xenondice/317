@@ -5,7 +5,7 @@ import json
 
 class Client:
     def __init__(self, loopfunction, presenter):
-        if settings.NEURAL_DATA_TYPE == "intensity":
+        if settings.NEURAL_DATA_TYPE != "frequency":
             raise SyntaxError("Invalid datatype, server only supports the frequency datatype")
         self.loopfunction = loopfunction
         self.presenter = presenter

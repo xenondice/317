@@ -62,6 +62,7 @@ class VirtualLedModel:
     mouse_last_y = -1.0
 
     refresh_queued = False
+    shutdown_requested = False
     delta_time = None
     last_time = None
     n_leds = None
@@ -378,6 +379,10 @@ class VirtualLedModel:
             glEnd()
 
     def _render(self):
+        if self.shutdown_requested:        
+            glutLeaveMainLoop()
+            return
+        
         now_time = time.time()
         self.delta_time = now_time - self.last_time
         self.last_time = now_time
@@ -450,6 +455,9 @@ class VirtualLedModel:
 
     def running(self):
         return self.visualizer_thread.is_alive()
+
+    def shutdown(self):
+        self.shutdown_requested = True
 
     def _keyboard_used(self, key, x, y):
         print(key)

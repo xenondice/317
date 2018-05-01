@@ -10,9 +10,12 @@ class TwoDPlot:
     def running(self):
         return plt.fignum_exists(self.fig.number)
 
+    def shutdown(self):
+        plt.close()
+
     def __init__(self):
         if settings.LED_MODEL_NAME != 'none':
-            sys.exit("Model not supported by current program")
+            raise SyntaxError("Model not supported by current program")
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111)
 
@@ -56,5 +59,5 @@ if __name__ == '__main__':
     plot_class = TwoDPlot()
     # start loop
     for byte_array in test_array:
-        plot_class.render(byte_array)
+        plot_class.refresh(byte_array)
         time.sleep(1)
