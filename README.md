@@ -89,6 +89,8 @@ An object for each stange in the pipe is then instanciated, in turn, based on th
 ## Neural data sources
 Marks the first step in the pipeline. This module is responsable for getting the neural data and creating a loop that passes the data on in regular intervals. The data is passed on through a callback to start.py.
 
+A neural source has to implement a contructor, that takes a callback function and a presenter object (in case the source has to display something, eg. a connection error), and a loop function, that starts an infinite loop. This loop has to call the callback function regularly (according to the `--refresh-rate` argument).
+
 There are currently three sources for neural data, which can be set by arguments: `--file`, `--server <ip>` and `--no-input`. The default is `--file`.
 
 ### File
@@ -107,80 +109,80 @@ This source will read neural data from a websocket server (https://github.com/cy
 This source only contains a loop and supplies the callback with a zero-array of data. This is useful for intrepreters that don't use the neural data such as random (demo-programs)
 
 ## Data interpreters
-Second step in the pipeline. This module in responsable for converting the Micro Electrode Array output to a array of RGB values appropriate for the model. We have provided a handful of different interpreters, but it is easy to create new ones. Interpreter classes has to implement a constructur function (and throw syntax error if the environment is invalid) and a render function. The render function takes to arguments, an input array of the neural data and an output array that is to be filled with the RBG LED values. The function returns nothing and is called before every refresh. A example is provided below:
-```
-import system.settings as settings
-import random
+Second step in the pipeline. This module in responsable for converting the Micro Electrode Array output to a array of RGB values appropriate for the model. We have provided a handful of different interpreters, but it is easy to create new ones. The demo-programs does not a neural source.
 
-class RandomMode:
-    def __init__(self):
-        pass
+Interpreter classes has to implement a constructur function (and throw syntax error if the environment is invalid) and a render function. The render function takes to arguments, an input array of the neural data and an output array that is to be filled with the RBG LED values. The function returns nothing and is called before every refresh.
 
-    def render(self, input_data, output_data):
-        for i in range(settings.LEDS_TOTAL):
-            for j in range(3):
-                output_data[i*3 + j] = random.randint(0, 255)
-```
-The default interpreter is `individual-moving-average`. An explaination of the different interpreters is provided below. The demo-programs does not a neural source.
+There are currently 7 interpreters. A interpreter can be selected by adding the argument `--interpreter <name>`. The default interpreter is `individual-moving-average`.
 
 ### Individual moving average
-High and low color can be changed using `--colors` (default: `blue` and `red`).
+```
+induvidual-moving-average
+```
+Stores all the neural data for the past n cycles. Then calculates the standard diviation and average for each neural node and sets the low cap to `average - diviation` and high to `average + diviation`. This causes the program to display any neural activity for each node relative to itself without the need for manual adjustment. This program was made since the neural data nodes tends to have an unevenly distributed amount of activity, so a global high and low will result in some nodes constantly being off or on. High and low color can be changed using `--colors` (default: `blue` and `red`).
 
 ### Moving average
-High and low color can be changed using `--colors` (default: `blue` and `red`).
+```
+moving-average
+```
+Calculates the standard diviation and the average for each cycle and stores them. It then takes the average of the last n values and sets the low cap to `average - diviation` and high to `average + diviation`. This causes the LED colors to represent the dynamic area of the neural data. No manual adjustment required. High and low color can be changed using `--colors` (default: `blue` and `red`).
 
 ### Intensity
+```
+intensity
+```
 Intensity interpreter uses the voltage to place each node into 10 groups based on each node output intensity on the MEA plate. The highest voltage will always be in group 9 and lowest voltage will always be in group 0. High and low color can be changed using `--colors` (default: `blue` and `red`).
 
 ### Random
+```
+random
+```
 Demo prorgam. Randomizes every LED color.
 
 ### Smiley
+```
+smiley
+```
 Demo prorgam. Only works on the `large_cube` led model. Shows a smiley on the top side, while a wave is travelling around the sides while cycling through different colors.
 
 ### Snake
+```
+snake
+```
 Demo program. Shows a snake travelling through the LED strip, changing color on each cycle.
 
-### snake-white
+### Snake white
+```
+snake-white
+```
 Demo program. Shows a random-colored snake moving through the LED strip on a white background.
 
 ## Visual presenters
-Default: `--serial`
+Last step of the pipeline. Responsable for showing the interpreted neural data to the user.
+
+Presenters should run in a separate thread. They have to implement a constructor, that sets up everything needed before displaying anything, a shutdown function, that gracefully shuts the presenter down, a running function, that reports back whether the presenter is still running, and a refresh function, for showing the LED values. The refresh funciton takes a array of RGB colors. The length of this array equals three times the number of LEDs in the active model.
+
+There are currently three presenters. `--serial`, `--2d-plot` and `--virtual`. The default is `--serial`.
+
 ### Serial
+![alt_text](https://i.imgur.com/SUMn21W.jpg)
+Responsable for convaying the LED data to a physical model connected over USB. Will crash if it can't find the Arduino controlling the lights. The folder arduino_files containes the code on the arduino running the lights on the large_cube model.
+
 ### 2D plot
+![alt_text](https://i.imgur.com/fXxC1Tp.png)
+Simple 2D plot made using the MatPlotLib library. The output is mapped 1:1 with the source data.
+
 ### Virtual
 ![alt_text](https://i.imgur.com/dXQbp2c.jpg)
-### Controls
+A 3D virtual representation of a physical LED model made in pyopengl. The model runs in a separate thread and is mainly implemented in OpenGL 3.2, however, the debug mode is implemented in OpenGL 1 for compatibility reasons. The presenter uses the json files in the led_models folder to generate the models.
+
+Controls:
 - Use the D key to switch to debug mode
 - Press and hold left mouse button + move mouse to rotate the model
 - Use the scroll wheel to zoom in and out
-### API
-First load the model's json file to a python dictionary object.
-```python
-import json
-file = open(filename)
-model = json.loads(file.read())
-```
-Then make an array of 3 times the number of LEDs to hold the colors and pass this + the dictionary to a new visualizer object.
-This will open a window and show the model. Keep in mind that the visualizer is working in a new thread.
-```python
-led_colors = [0] * (len(model_dict['led-strip']) * 3)
-visualizer = LedVisualizer(model, led_colors)
-```
-Now update the `led_colors` array and call `visualizer.refresh()` whenever you want the virtual model to change.
-If you want to use the model file's led-groups, just access them from the dictionary object, but remeber to check for -1.
-```python
- led_id = model['led-groups']['down-plane'][x][y]
- if led_id != -1:
-     led_colors[led_id*3] = 255
-     led_colors[led_id*3+1] = 255
-     led_colors[led_id*3+2] = 255
-```
 
-## Miscellaneous
-The project has some additional files of intrest.
-
-### LED models
+# LED model files
+Holds JSON files containing information about a given physical model. The virtual presenter uses this to generate a 3D presentation of the model. Below is a commented example:
 ```javascript
 {
   // Defines the sequential positions of the LEDs in the led strip in 3D space.
