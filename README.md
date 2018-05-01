@@ -99,27 +99,114 @@ This data source will read neural data from a `.csv` file depending on which dat
 > Increasing `--refresh-rate` will make file source mode more exiting, but may be limited by the presenter (in our experience, a refresh rate of 15 is the highest rate for the large LED cube)
 
 ### Server
-This source will read neural data from a websocket server (https://github.com/cyborg-client/Remap-server) at the provided ip. The default port of 6780 can be overvritten by supplying the argument `--port <port>`. The LEDs on the presenter will turn red if the connection times out. Although supported by the remap-server, passing feedback signals back to the neurons is not yet supported by this program. Also note that the remap-server doesn't support the intensity datatype and will fail if this datatype is supplied.
+This source will read neural data from a websocket server (https://github.com/cyborg-client/Remap-server) at the provided ip. The default port of 6780 can be overvritten by supplying the argument `--port <port>`. The LEDs on the presenter will turn red if the connection times out. Although supported by the remap-server, passing feedback signals back to the neurons is not yet supported by this program.
+> Note:
+> The remap-server doesn't support the intensity datatype and will fail if this datatype is supplied.
 
 ### No input
 This source only contains a loop and supplies the callback with a zero-array of data. This is useful for intrepreters that don't use the neural data such as random (demo-programs)
 
 ## Data interpreters
-Default: `individual-moving-average`
-### Individual moving average
-### Moving average
-### Intensity
-Intensity interpreter uses the voltage to place each node into 10 groups based on each node output intensity on the MEA plate. The highest voltage will always be in group 9 and lowest voltage will always be in group 0. High and low color can be changed using `--colors` (default: `green` and `red`)
-### Random
-### Smiley
-### Snake
+Second step in the pipeline. This module in responsable for converting the Micro Electrode Array output to a array of RGB values appropriate for the model. We have provided a handful of different interpreters, but it is easy to create new ones. Interpreter classes has to implement a constructur function (and throw syntax error if the environment is invalid) and a render function. The render function takes to arguments, an input array of the neural data and an output array that is to be filled with the RBG LED values. The function returns nothing and is called before every refresh. A example is provided below:
+```
+import system.settings as settings
+import random
 
+class RandomMode:
+    def __init__(self):
+        pass
+
+    def render(self, input_data, output_data):
+        for i in range(settings.LEDS_TOTAL):
+            for j in range(3):
+                output_data[i*3 + j] = random.randint(0, 255)
+```
+The default interpreter is `individual-moving-average`. An explaination of the different interpreters is provided below. The demo-programs does not a neural source.
+
+### Individual moving average
+High and low color can be changed using `--colors` (default: `blue` and `red`).
+
+### Moving average
+High and low color can be changed using `--colors` (default: `blue` and `red`).
+
+### Intensity
+Intensity interpreter uses the voltage to place each node into 10 groups based on each node output intensity on the MEA plate. The highest voltage will always be in group 9 and lowest voltage will always be in group 0. High and low color can be changed using `--colors` (default: `blue` and `red`).
+
+### Random
+Demo prorgam. Randomizes every LED color.
+
+### Smiley
+Demo prorgam. Only works on the `large_cube` led model. Shows a smiley on the top side, while a wave is travelling around the sides while cycling through different colors.
+
+### Snake
+Demo program. Shows a snake travelling through the LED strip, changing color on each cycle.
+
+### snake-white
+Demo program. Shows a random-colored snake moving through the LED strip on a white background.
 
 ## Visual presenters
 Default: `--serial`
 ### Serial
 ### 2D plot
 ### Virtual
+![alt_text](https://i.imgur.com/dXQbp2c.jpg)
+### Controls
+- Use the D key to switch to debug mode
+- Press and hold left mouse button + move mouse to rotate the model
+- Use the scroll wheel to zoom in and out
+### API
+First load the model's json file to a python dictionary object.
+```python
+import json
+file = open(filename)
+model = json.loads(file.read())
+```
+Then make an array of 3 times the number of LEDs to hold the colors and pass this + the dictionary to a new visualizer object.
+This will open a window and show the model. Keep in mind that the visualizer is working in a new thread.
+```python
+led_colors = [0] * (len(model_dict['led-strip']) * 3)
+visualizer = LedVisualizer(model, led_colors)
+```
+Now update the `led_colors` array and call `visualizer.refresh()` whenever you want the virtual model to change.
+If you want to use the model file's led-groups, just access them from the dictionary object, but remeber to check for -1.
+```python
+ led_id = model['led-groups']['down-plane'][x][y]
+ if led_id != -1:
+     led_colors[led_id*3] = 255
+     led_colors[led_id*3+1] = 255
+     led_colors[led_id*3+2] = 255
+```
 
 ## Miscellaneous
 The project has some additional files of intrest.
+
+### LED models
+```javascript
+{
+  // Defines the sequential positions of the LEDs in the led strip in 3D space.
+  // 1 unit = 1 meter.
+  "led-strip": [
+    [0, 0, -1.1], // The first LED position in [X,Y,Z].
+    [1, 0, -1.1],
+    [0, 1, -1.1]
+  ],
+
+  // Defines a polygonal model behind which the LEDs will sit.
+  // Follow the right-hand-rule to ensure the normals of the polygons
+  // points out towards the observer.
+  "led-enclosure": [
+    [[-0.5, -0.5, -1], [2, -0.5, -1], [-0.5, 2, -1]] // First triangular polygon, normal along negative Z.
+  ],
+
+  // Defines groups that can be used in the code to easier control single LEDs.
+  // Accessible through a dictionary object in code, group name is arbitrary.
+  // Use n-dimensional arrays with the ids of the LEDs (zero-indexed).
+  // Use id -1 for placeholder LEDs.
+  "led-groups": {
+    "down-plane": [ // Group "down-plane" with a 2D matrix containing LEDs 0, 1, 2 and one placeholder.
+      [0, 1],
+      [2, -1]
+    ]
+  }
+}
+```
