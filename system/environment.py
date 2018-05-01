@@ -30,6 +30,9 @@ General:
     Name of the script that reads neural data from the input source,
     and returns the LED colors for the model.
     The interpreters lie in neural_interpreter.
+    The currently implemented interpreters are
+    random, moving-average, induvidual-moving-average,
+    snake, snake-white, intensity, smiley
 [--colors] <color_low> <color_high>
     The two colors to represent high and low intensity.
     The program will create a color-gradient between these two for all values in between
