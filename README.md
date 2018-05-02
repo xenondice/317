@@ -75,6 +75,10 @@ Open up a terminal with python 3, navigate to the project folder and type `pytho
 ```
 python start.py --refresh-rate 10 --datatype frequency --led-model large_cube --interpreter individual-moving-average --colors blue red --file neural_sources/file/data/2017-10-20_MEA2_100000rows_10sec.csv --serial
 ```
+An example for running the program with the remap-server using the virtual cube is shown the following command:
+```
+python start.py --server <ip_address_server> --port <port> --virtual --refresh-rate 30
+```
 
 # Project structure
 The project is divided into three modules: neural sources, neural interpreters and neural presenters. Each of these modules represent a part of a three stage pipeline for visualizing neural data, and each module consists of several sub-modules that are interchangeable. The different sub-modules can be chosen by supplying the correct argument on runtime. The pipeline itself is located in the start.py file, with supplementary files located in the systems module.
